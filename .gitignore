@@ -1859,3 +1859,7 @@ Robot Hole Punch/Library/metadata/4b/4b3fa4bde7f1451a8218c03ee6a8ded8
 Robot Hole Punch/Library/metadata/41/4113173d5e95493ab8765d7b08371de4
 Robot Hole Punch/Library/metadata/40/405b9b51bb344a128608d968297df79c
 Robot Hole Punch/Library/metadata/36/36e8bb3feb5e6402185947b817a6ed8d.info
+*.txt
+*.json
+*.dwlt
+Robot Hole Punch/Library/assetDatabase3
