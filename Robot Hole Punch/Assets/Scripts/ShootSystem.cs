@@ -45,23 +45,6 @@ public class ShootSystem : MonoBehaviour
                 Shoot();
             }
         }
-        /*
-         if (Input.GetMouseButtonDown(0))
-        {
-            if (Physics.Raycast(weapon.position, weapon.forward, out RaycastHit hit, 100f, wallLayer, QueryTriggerInteraction.Ignore))
-            {
-                if (hit.transform.CompareTag("Destructable"))
-                {
-                    HoleBehaviour hole = Instantiate(holePrefab, hit.point, Quaternion.FromToRotation(Vector3.up, hit.normal)).GetComponent<HoleBehaviour>();
-                    hole.Configure(hit.collider, transform, entitiesLayer);
-                }
-                else
-                {
-                    Debug.Log("Non-destroyable obstacle.");
-                }
-            }
-        }
-         */
     }
 
     private void Shoot()
@@ -72,7 +55,6 @@ public class ShootSystem : MonoBehaviour
             {
                 HoleBehaviour hole = Instantiate(holePrefab, hit.point, Quaternion.FromToRotation(Vector3.up, hit.normal), hit.transform).GetComponent<HoleBehaviour>();
                 hole.Configure(hit.collider, transform, playerLayer);
-                Debug.Log("Hole instantiated.");
             }
             else
             {
