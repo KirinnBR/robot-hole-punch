@@ -5,10 +5,11 @@ using UnityEngine;
 public class HoleBehaviour : MonoBehaviour
 {
     private Collider parent;
-    private LayerMask playerLayer;
     private Transform player;
     [SerializeField]
     private float holeRadius = 3f;
+    [SerializeField]
+    private LayerMask playerLayer;
 
     private static List<bool> validHoles = new List<bool>();
     private int currentHoleIndex = 0;
@@ -17,7 +18,7 @@ public class HoleBehaviour : MonoBehaviour
     {
         rend = GetComponent<MeshRenderer>();
     }
-    // Update is called once per frame
+    
     void FixedUpdate()
     {
         Debug.DrawLine(transform.position, player.position, Color.red, 0f, false);
@@ -53,7 +54,7 @@ public class HoleBehaviour : MonoBehaviour
         }
     }
 
-    public void Configure(Collider parentCollider, Transform player, LayerMask layer)
+    public void Configure(Collider parentCollider, Transform player)
     {
         this.player = player;
         validHoles.Add(false);
@@ -62,11 +63,11 @@ public class HoleBehaviour : MonoBehaviour
         transform.localPosition = new Vector3(transform.localPosition.x, 0, transform.localPosition.z);
         transform.localScale = new Vector3(holeRadius * 2 / parentTransform.localScale.x, parentTransform.localScale.y + 0.1f, holeRadius * 2 / parentTransform.localScale.z);
         parent = parentCollider;
-        playerLayer = layer;
     }
 
     private void OnDrawGizmos()
     {
+        Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, holeRadius);
     }
 

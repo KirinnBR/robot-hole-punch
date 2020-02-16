@@ -91,3 +91,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   holeRadius: 2
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 512
