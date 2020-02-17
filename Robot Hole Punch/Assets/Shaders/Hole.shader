@@ -12,7 +12,6 @@
                 Ref 1
                 Comp notequal
             }
-
             CGPROGRAM
             #pragma surface surf Lambert finalcolor:mycolor
             sampler2D _MainTex;
