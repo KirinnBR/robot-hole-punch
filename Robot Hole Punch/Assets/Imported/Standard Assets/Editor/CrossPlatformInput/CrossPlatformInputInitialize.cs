@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEditor;
-
+#pragma warning disable CS0618
 namespace UnityStandardAssets.CrossPlatformInput.Inspector
 {
     [InitializeOnLoad]

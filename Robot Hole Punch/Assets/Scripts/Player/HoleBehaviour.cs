@@ -1,27 +1,30 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
+[RequireComponent(typeof(NavMeshLink))]
 public class HoleBehaviour : MonoBehaviour
 {
     private Collider parent;
     private Transform player;
     [SerializeField]
-    private float holeRadius = 3f;
+    private float radius = 3f;
     [SerializeField]
     private LayerMask playerLayer;
 
     private static List<bool> validHoles = new List<bool>();
     private int currentHoleIndex = 0;
     private MeshRenderer rend;
-    private void Start()
+    private NavMeshLink link;
+    private void Awake()
     {
         rend = GetComponent<MeshRenderer>();
+        link = GetComponent<NavMeshLink>();
     }
     
     void FixedUpdate()
     {
-        Debug.DrawLine(transform.position, player.position, Color.red, 0f, false);
         if (Physics.Linecast(transform.position, player.position, out RaycastHit hit))
         {
             var tag = hit.transform.tag;
@@ -34,7 +37,7 @@ public class HoleBehaviour : MonoBehaviour
                 rend.enabled = true;
             }
         }
-        if (Physics.CheckSphere(transform.position, holeRadius, playerLayer, QueryTriggerInteraction.Ignore))
+        if (Physics.CheckSphere(transform.position, radius, playerLayer, QueryTriggerInteraction.Ignore))
         {
             validHoles[currentHoleIndex] = true;
             parent.enabled = false;
@@ -54,21 +57,33 @@ public class HoleBehaviour : MonoBehaviour
         }
     }
 
-    public void Configure(Collider parentCollider, Transform player)
+    public void Configure(Collider parentCollider, Transform playerTransform)
     {
-        this.player = player;
+        //Setting up references.
+        player = playerTransform;
+        parent = parentCollider;
+
+        //Setting up HoleBehaviour.
         validHoles.Add(false);
         currentHoleIndex = validHoles.Count - 1;
-        var parentTransform = parentCollider.transform;
+
+        //Setting up hole transform.
+        transform.localScale = new Vector3(radius * 2, radius * 2, parent.transform.localScale.y + 1f);
+        transform.parent = parentCollider.transform;
         transform.localPosition = new Vector3(transform.localPosition.x, 0, transform.localPosition.z);
-        transform.localScale = new Vector3(holeRadius * 2 / parentTransform.localScale.x, parentTransform.localScale.y + 0.1f, holeRadius * 2 / parentTransform.localScale.z);
-        parent = parentCollider;
+
+        //Setting up NavMeshLink.
+        var yAxis = player.position.y - transform.position.y - 0.2f;
+        if (Mathf.Abs(yAxis) > 5f)
+            yAxis = 0f;
+        link.startPoint = (Vector3.forward * transform.localScale.z) + (Vector3.up * yAxis);
+        link.endPoint = (-Vector3.forward * transform.localScale.z) + (Vector3.up * yAxis);
     }
 
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, holeRadius);
+        Gizmos.DrawWireSphere(transform.position, radius);
     }
 
 }

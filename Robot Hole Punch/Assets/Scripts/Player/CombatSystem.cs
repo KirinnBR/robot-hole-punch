@@ -43,10 +43,9 @@ public class CombatSystem : MonoBehaviour, IDamageable
 
     private void Start()
     {
-        
+        CurrentHealth = stats.health;
     }
 
-    // Update is called once per frame
     void Update()
     {
         ProccessInput();
@@ -87,7 +86,7 @@ public class CombatSystem : MonoBehaviour, IDamageable
         {
             if (hit.transform.CompareTag("Destructable"))
             {
-                HoleBehaviour hole = Instantiate(holePrefab, hit.point, Quaternion.FromToRotation(Vector3.up, hit.normal), hit.transform).GetComponent<HoleBehaviour>();
+                HoleBehaviour hole = Instantiate(holePrefab, hit.point, Quaternion.LookRotation(hit.normal, Vector3.up)).GetComponent<HoleBehaviour>();
                 hole.Configure(hit.collider, transform);
             }
         }
@@ -99,12 +98,17 @@ public class CombatSystem : MonoBehaviour, IDamageable
 
     public void TakeDamage(float amount)
     {
-
+        CurrentHealth -= amount;
+        if (CurrentHealth <= 0)
+        {
+            Die();
+        }
     }
 
     private void Die()
     {
-
+        CurrentHealth = 0;
+        //Call for endgame.
     }
 
     #endregion

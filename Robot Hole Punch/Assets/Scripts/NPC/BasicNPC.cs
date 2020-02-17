@@ -1,22 +1,30 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
-public class BasicNPC : MonoBehaviour, IDamageable
+public class BasicNPC : NPC
 {
-    public Stats stats;
-    public float CurrentHealth { get; private set; }
-    private void Start()
+    private Transform enemy;
+    private IDamageable dmg;
+
+    private void Update()
     {
-        CurrentHealth = stats.health;
-    }
-    public void TakeDamage(float amount)
-    {
-        Debug.Log(name + " took " + amount + " damage.");
-        CurrentHealth -= amount;
-        if (CurrentHealth <= 0)
+        if (hasVisibleObjects)
         {
-            Destroy(gameObject);
+            enemy = visibleObjects.Find(en => en.CompareTag("Player"));
+            dmg = enemy.GetComponent<IDamageable>();
         }
+
+        if (enemy != null)
+        {
+            agent.destination = enemy.position;
+            if (IsCloseEnoughToPoint(enemy.position))
+            {
+                dmg.TakeDamage(2f);
+            }
+        }
+
+
     }
 }

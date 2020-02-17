@@ -7,12 +7,17 @@ public class InputSystem : MonoBehaviour
     [SerializeField]
     private MouseButtonCode buttonToChargeAndShoot = MouseButtonCode.LeftButton;
     [SerializeField]
-    private KeyCode keyToJump = KeyCode.Space;
+    private KeyCode jumpKey = KeyCode.Space;
+    [SerializeField]
+    private KeyCode hookKey = KeyCode.E;
+
     public bool Charge { get { return Input.GetMouseButtonDown((int)buttonToChargeAndShoot); } }
     public bool Shoot { get { return Input.GetMouseButtonUp((int)buttonToChargeAndShoot); } }
-    public bool Jump { get { return Input.GetKeyDown(keyToJump); } }
+    public bool Jump { get { return Input.GetKeyDown(jumpKey); } }
+    public bool Hook { get { return Input.GetKeyDown(hookKey); } }
     public float Horizontal { get; private set; }
     public float Vertical { get; private set; }
+
     private void Update()
     {
         Horizontal = Input.GetAxisRaw("Horizontal");

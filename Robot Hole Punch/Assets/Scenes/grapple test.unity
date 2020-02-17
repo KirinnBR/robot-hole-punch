@@ -407,8 +407,8 @@ GameObject:
   - component: {fileID: 662579750}
   - component: {fileID: 662579749}
   - component: {fileID: 662579748}
-  - component: {fileID: 662579747}
   - component: {fileID: 662579746}
+  - component: {fileID: 662579747}
   - component: {fileID: 662579745}
   - component: {fileID: 662579753}
   m_Layer: 9
@@ -466,7 +466,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buttonToChargeAndShoot: 0
-  keyToJump: 32
+  jumpKey: 32
+  hookKey: 101
 --- !u!82 &662579748
 AudioSource:
   m_ObjectHideFlags: 0
@@ -718,8 +719,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugHitPointtransform: {fileID: 526039184}
-  playerCamera: {fileID: 985348347}
-  characterController: {fileID: 662579751}
 --- !u!1 &985348346
 GameObject:
   m_ObjectHideFlags: 0
