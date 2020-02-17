@@ -6,15 +6,16 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshLink))]
 public class HoleBehaviour : MonoBehaviour
 {
-    private Collider parent;
-    private Transform player;
-    [SerializeField]
-    private float radius = 3f;
     [SerializeField]
     private LayerMask playerLayer;
 
     private static List<bool> validHoles = new List<bool>();
     private int currentHoleIndex = 0;
+
+    private Collider parent;
+    private Transform player;
+    private float radius = 3f;
+
     private MeshRenderer rend;
     private NavMeshLink link;
     private void Awake()
@@ -57,11 +58,12 @@ public class HoleBehaviour : MonoBehaviour
         }
     }
 
-    public void Configure(Collider parentCollider, Transform playerTransform)
+    public void Configure(Collider parentCollider, Transform playerTransform, float holeRadius)
     {
         //Setting up references.
         player = playerTransform;
         parent = parentCollider;
+        radius = holeRadius;
 
         //Setting up HoleBehaviour.
         validHoles.Add(false);

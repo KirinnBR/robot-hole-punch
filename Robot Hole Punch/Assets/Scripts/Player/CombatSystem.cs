@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,12 +14,24 @@ public class CombatSystem : MonoBehaviour, IDamageable
     [SerializeField]
     private LayerMask enemiesLayer;
     [SerializeField]
-    private GameObject holePrefab;
-    [SerializeField]
     private float maxSecondsCharge = 2f;
-    private float currentTime = 0f;
+    [SerializeField]
+    private float reloadAnimationTime = 2f;
 
     private bool isCharging = false;
+    private bool isReloading = false;
+    private float currentTime = 0f;
+
+    #endregion
+
+    #region Hole Settings
+
+    [Header("Hole Settings")]
+
+    [SerializeField]
+    private GameObject holePrefab;
+    [SerializeField]
+    private float holeMaxRadius = 5f;
 
     #endregion
 
@@ -35,6 +48,8 @@ public class CombatSystem : MonoBehaviour, IDamageable
 
     private InputSystem input { get { return PlayerCenterControl.Instance.input; } }
     private Camera cam { get { return PlayerCenterControl.Instance.Camera; } }
+    private FirstPersonController controller { get { return PlayerCenterControl.Instance.FirstPersonController; } }
+    private Animator anim { get { return PlayerCenterControl.Instance.Animator; } }
     public float CurrentHealth { get; private set; }
 
     #endregion
@@ -49,12 +64,16 @@ public class CombatSystem : MonoBehaviour, IDamageable
     void Update()
     {
         ProccessInput();
+        UpdateAnimator();
     }
 
     private void ProccessInput()
     {
+        if (isReloading) return;
+
         if (!isCharging)
         {
+            controller.CanRun = true;
             if (input.Charge)
             {
                 currentTime = 0f;
@@ -64,6 +83,7 @@ public class CombatSystem : MonoBehaviour, IDamageable
         }
         else
         {
+            controller.CanRun = false;
             currentTime += Time.deltaTime;
             if (currentTime >= 2f)
                 Shoot(1f);
@@ -87,16 +107,34 @@ public class CombatSystem : MonoBehaviour, IDamageable
             if (hit.transform.CompareTag("Destructable"))
             {
                 HoleBehaviour hole = Instantiate(holePrefab, hit.point, Quaternion.LookRotation(hit.normal, Vector3.up)).GetComponent<HoleBehaviour>();
-                hole.Configure(hit.collider, transform);
+                hole.Configure(hit.collider, transform, holeMaxRadius * power);
             }
         }
+        StartCoroutine(Reload());
     }
 
-    #endregion
+    private void UpdateAnimator()
+    {
+        anim.SetBool("Is Moving", controller.IsMoving);
+        anim.SetBool("Is Charging", isCharging);
+    }
 
-    #region IDamageable Methods
+	#endregion
 
-    public void TakeDamage(float amount)
+	#region Coroutines
+
+    private IEnumerator Reload()
+    {
+        isReloading = true;
+        yield return new WaitForSeconds(reloadAnimationTime);
+        isReloading = false;
+    }
+
+	#endregion
+
+	#region IDamageable Methods
+
+	public void TakeDamage(float amount)
     {
         CurrentHealth -= amount;
         if (CurrentHealth <= 0)

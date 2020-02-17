@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityStandardAssets.Characters.FirstPerson;
 
 [RequireComponent(typeof(CombatSystem), typeof(InputSystem), typeof(FirstPersonController))]
+[RequireComponent(typeof(Animator))]
 public class PlayerCenterControl : Singleton<PlayerCenterControl>
 {
     public InputSystem input { get; private set; }
@@ -11,12 +11,17 @@ public class PlayerCenterControl : Singleton<PlayerCenterControl>
     private Camera cam;
     public Camera Camera { get { return cam; } }
     public CharacterController CharacterController { get; private set; }
-    protected override void Awake()
+    public FirstPersonController FirstPersonController { get; private set; }
+	public Animator Animator { get; private set; }
+
+	protected override void Awake()
     {
         base.Awake();
         if (cam == null)
             cam = Camera.main;
         CharacterController = GetComponent<CharacterController>();
+        FirstPersonController = GetComponent<FirstPersonController>();
+        Animator = GetComponent<Animator>();
         input = GetComponent<InputSystem>();
     }
 }
