@@ -17,7 +17,8 @@ public class HookSystem : MonoBehaviour
     #region References
 
     private Camera playerCamera { get { return PlayerCenterControl.Instance.Camera; } }
-    private CharacterController characterController { get { return PlayerCenterControl.Instance.CharacterController; } }
+    private CharacterController characterController { get { return firstPersonController.CharacterController; } }
+    private FirstPersonController firstPersonController { get { return PlayerCenterControl.Instance.FirstPersonController; } }
     private InputSystem input { get { return PlayerCenterControl.Instance.input; } }
 
     #endregion
@@ -40,7 +41,10 @@ public class HookSystem : MonoBehaviour
         {
             if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out RaycastHit raycastHit))
             {
-                debugHitPointtransform.position = raycastHit.point;
+                if (debugHitPointtransform != null)
+                {
+                    debugHitPointtransform.position = raycastHit.point;
+                }
                 hookshotPosition = raycastHit.point;
                 state = State.HookshotFlyingPlayer;
             }
@@ -49,15 +53,16 @@ public class HookSystem : MonoBehaviour
 
     private void HandleCharacterLook()
     {
-        float lookX = Input.GetAxisRaw("Mouse X");
-        float lookY = Input.GetAxisRaw("Mouse Y");
+        float lookX = input.MouseY;
+        float lookY = input.MouseY;
         //// no idea if this works
     }
 
     private void HandleCharacterMovement()
     {
-        float moveX = Input.GetAxisRaw("Horizontal");
-        float moveY = Input.GetAxisRaw("Vertical");
+        firstPersonController.UseGravity = true;
+        float moveX = input.Horizontal;
+        float moveY = input.Vertical;
     }
 
     private void Update()
@@ -79,7 +84,9 @@ public class HookSystem : MonoBehaviour
     }
     private void HandleHookshotMovement()
     {
-        Vector3 hookshotDir = hookshotPosition - transform.position.normalized;
+        firstPersonController.UseGravity = false;
+
+        Vector3 hookshotDir = (hookshotPosition - transform.position).normalized;
 
         float hookshotSpeed = 5f;
 

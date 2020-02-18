@@ -10,7 +10,6 @@ public class PlayerCenterControl : Singleton<PlayerCenterControl>
     [SerializeField]
     private Camera cam;
     public Camera Camera { get { return cam; } }
-    public CharacterController CharacterController { get; private set; }
     public FirstPersonController FirstPersonController { get; private set; }
 	public Animator Animator { get; private set; }
 
@@ -19,7 +18,6 @@ public class PlayerCenterControl : Singleton<PlayerCenterControl>
         base.Awake();
         if (cam == null)
             cam = Camera.main;
-        CharacterController = GetComponent<CharacterController>();
         FirstPersonController = GetComponent<FirstPersonController>();
         Animator = GetComponent<Animator>();
         input = GetComponent<InputSystem>();
