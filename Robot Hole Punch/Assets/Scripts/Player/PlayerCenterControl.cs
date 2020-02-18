@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(CombatSystem), typeof(InputSystem), typeof(FirstPersonController))]
-[RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(Animator), typeof(HookSystem))]
 public class PlayerCenterControl : Singleton<PlayerCenterControl>
 {
     public InputSystem input { get; private set; }

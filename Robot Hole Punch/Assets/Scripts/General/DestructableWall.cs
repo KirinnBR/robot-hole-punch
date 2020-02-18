@@ -1,33 +1,65 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class DestructableWall : MonoBehaviour
 {
     [SerializeField]
+    private float distanceFromPlayerLimit = 80f;
+    [SerializeField]
     private Material defaultMaterial;
     [SerializeField]
     private Material stencilMaterial;
+    [SerializeField]
+    private float wallThickness = 1f;
 
-    private MeshRenderer rend;
+    private Renderer rend;
+    private Collider col;
 
-    private Transform reference { get { return PlayerCenterControl.Instance.transform; } }
+    private Transform reference { get { return PlayerCenterControl.Instance.Camera.transform; } }
     private LayerMask holesLayer { get { return LayerManager.Instance.holeLayer; } }
-    private LayerMask destructableWallLayer { get { return LayerManager.Instance.destructableEnvironmentLayer; } }
+    private LayerMask environmentLayer { get { return LayerManager.Instance.environmentLayer; } }
+
+    private List<Hole> holes = new List<Hole>();
 
     private void Start()
     {
         rend = GetComponent<MeshRenderer>();
+        col = GetComponent<Collider>();
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    private void FixedUpdate()
     {
-        if (Vector3.Distance(reference.position, transform.position) > 100f)
+        if (Vector3.Distance(reference.position, transform.position) > distanceFromPlayerLimit)
             return;
-        if (Physics.Linecast(transform.position, reference.position, holesLayer | destructableWallLayer, QueryTriggerInteraction.Collide))
+
+        foreach (var hole in holes)
+        {
+            if (hole.IsValid)
+            {
+                col.enabled = false;
+                break;
+            }
+            col.enabled = true;
+        }
+
+        if (Physics.Linecast(transform.position, reference.position, holesLayer | environmentLayer, QueryTriggerInteraction.Collide))
             rend.material = defaultMaterial;
         else
             rend.material = stencilMaterial;
     }
+
+
+    public void InstantiateHole(GameObject hole, float radius, Vector3 hitPosition, Quaternion rotation)
+    {
+        var pos = new Vector3(hitPosition.x, hitPosition.y, transform.position.z);
+        GameObject obj = Instantiate(hole, pos, rotation);
+        var newHole = obj.GetComponent<Hole>();
+        newHole.Configure(radius, wallThickness);
+        holes.Add(newHole);
+    }
+
 }

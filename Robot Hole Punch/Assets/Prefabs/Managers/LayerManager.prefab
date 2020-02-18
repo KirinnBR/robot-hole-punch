@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2575993902175518572}
   m_Layer: 2
   m_Name: LayerManager
-  m_TagString: Untagged
+  m_TagString: Manager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -45,16 +45,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerLayer:
     serializedVersion: 2
-    m_Bits: 2048
+    m_Bits: 1024
   enemyLayer:
     serializedVersion: 2
-    m_Bits: 4096
-  defaultEnvironmentLayer:
+    m_Bits: 2048
+  environmentLayer:
     serializedVersion: 2
     m_Bits: 256
-  destructableEnvironmentLayer:
-    serializedVersion: 2
-    m_Bits: 512
   holeLayer:
     serializedVersion: 2
-    m_Bits: 1024
+    m_Bits: 512

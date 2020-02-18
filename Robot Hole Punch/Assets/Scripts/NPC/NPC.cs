@@ -39,8 +39,7 @@ public abstract class NPC : MonoBehaviour, IDamageable
 	#region References
 
     protected LayerMask playerLayer { get { return LayerManager.Instance.playerLayer; } }
-    protected LayerMask defaultEnvironmentLayer { get { return LayerManager.Instance.defaultEnvironmentLayer; } }
-    protected LayerMask destructableEnvironmentLayer { get { return LayerManager.Instance.destructableEnvironmentLayer; } }
+    protected LayerMask environmentLayer { get { return LayerManager.Instance.environmentLayer; } }
 
     #endregion
 
@@ -68,7 +67,7 @@ public abstract class NPC : MonoBehaviour, IDamageable
                 Vector3 dirToTarget = (objectsInVisionRadius[i].transform.position - transform.position).normalized;
                 if (Vector3.Angle(transform.forward, dirToTarget) < normalVisionAngle / 2f)
                 {
-                    if (!Physics.Linecast(transform.position, objectsInVisionRadius[i].transform.position, defaultEnvironmentLayer | destructableEnvironmentLayer))
+                    if (!Physics.Linecast(transform.position, objectsInVisionRadius[i].transform.position, environmentLayer))
                     {
                         visibleObjects.Add(objectsInVisionRadius[i].transform);
                     }

@@ -10,9 +10,9 @@ public class CombatSystem : MonoBehaviour, IDamageable
     [Header("Gun Settings")]
 
     [SerializeField]
-    private float maxSecondsCharge = 2f;
+    private float maxSecondsCharge = 5f;
     [SerializeField]
-    private float reloadAnimationTime = 2f;
+    private float reloadAnimationTime = 2.5f;
 
     private Coroutine reloadCoroutine;
     private bool isCharging = false;
@@ -49,7 +49,7 @@ public class CombatSystem : MonoBehaviour, IDamageable
     private Animator anim { get { return PlayerCenterControl.Instance.Animator; } }
     private LayerMask enemiesLayer { get { return LayerManager.Instance.enemyLayer; } }
     private LayerMask holesLayer { get { return LayerManager.Instance.holeLayer; } }
-    private LayerMask destructableWallLayer { get { return LayerManager.Instance.destructableEnvironmentLayer; } }
+    private LayerMask environmentLayer { get { return LayerManager.Instance.environmentLayer; } }
     public float CurrentHealth { get; private set; }
 
     #endregion
@@ -108,17 +108,18 @@ public class CombatSystem : MonoBehaviour, IDamageable
 
         if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, 100f, holesLayer, QueryTriggerInteraction.Collide))
         {
-            if (Physics.Raycast(hit.point + transform.forward, cam.transform.forward, out hit, 100f, destructableWallLayer, QueryTriggerInteraction.UseGlobal))
+            if (Physics.Raycast(hit.point + transform.forward, cam.transform.forward, out hit, 100f, environmentLayer, QueryTriggerInteraction.UseGlobal))
             {
-                InstantiateHole(hit, power);
+                if (hit.transform.TryGetComponent(out DestructableWall dst))
+                    dst.InstantiateHole(holePrefab, holeMaxRadius * power, hit.point, Quaternion.LookRotation(hit.normal, Vector3.up));
+                //HoleBehaviour hole = Instantiate(holePrefab, hit.point, Quaternion.LookRotation(hit.normal, Vector3.up)).GetComponent<HoleBehaviour>();
             }
         }
-        else
+        else if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, 100f, environmentLayer, QueryTriggerInteraction.UseGlobal))
         {
-            if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, 100f, destructableWallLayer, QueryTriggerInteraction.UseGlobal))
-            {
-                InstantiateHole(hit, power);
-            }
+            if (hit.transform.TryGetComponent(out DestructableWall dst))
+                dst.InstantiateHole(holePrefab, holeMaxRadius * power, hit.point, Quaternion.LookRotation(hit.normal, Vector3.up));
+            //HoleBehaviour hole = Instantiate(holePrefab, hit.point, Quaternion.LookRotation(hit.normal, Vector3.up)).GetComponent<HoleBehaviour>();
         }
 
         if (reloadCoroutine != null)
@@ -126,15 +127,13 @@ public class CombatSystem : MonoBehaviour, IDamageable
         reloadCoroutine = StartCoroutine(Reload());
     }
 
-    private void InstantiateHole(RaycastHit hit, float power)
-    {
-        HoleBehaviour hole = Instantiate(holePrefab, hit.point, Quaternion.LookRotation(hit.normal, Vector3.up)).GetComponent<HoleBehaviour>();
-        hole.Configure(hit.collider, transform, holeMaxRadius * power);
-    }
-
     private void UpdateAnimator()
     {
-        if (anim == null) return;
+        if (anim == null)
+        {
+            Debug.Log("Animator == null");
+            return;
+        }
 
         anim.SetBool("Is Moving", controller.IsMoving);
         anim.SetBool("Is Charging", isCharging);

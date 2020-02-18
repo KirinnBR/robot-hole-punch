@@ -62,6 +62,7 @@ public class FirstPersonController : MonoBehaviour
     private Vector2 m_Input;
     private Vector3 m_MoveDir = Vector3.zero;
     private CharacterController m_CharacterController;
+    public CharacterController CharacterController { get { return m_CharacterController; } }
     private CollisionFlags m_CollisionFlags;
     private bool m_PreviouslyGrounded;
     private Vector3 m_OriginalCameraPosition;
@@ -70,8 +71,8 @@ public class FirstPersonController : MonoBehaviour
     private bool m_Jumping;
     private AudioSource m_AudioSource;
 
-    public bool useGravity = true;
 
+    public bool UseGravity { get; set; } = true;
     public bool CanRun { get; set; }
 
     private InputSystem input { get { return PlayerCenterControl.Instance.input; } }
@@ -156,7 +157,7 @@ public class FirstPersonController : MonoBehaviour
             m_MoveDir += Physics.gravity * m_GravityMultiplier * Time.fixedDeltaTime;
         }
 
-        if (!useGravity)
+        if (!UseGravity)
         {
             m_MoveDir.y = 0;
         }

@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3349975035194976092}
   - component: {fileID: 6776398329196012368}
   - component: {fileID: 334303669016047787}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Hole
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,6 +92,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1939ad1c21c2b474b8a38c785f933203, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  radius: 3
+  isValid: 0
 --- !u!114 &6776398329196012368
 MonoBehaviour:
   m_ObjectHideFlags: 0

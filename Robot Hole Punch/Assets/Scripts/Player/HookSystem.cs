@@ -7,126 +7,94 @@ public class HookSystem : MonoBehaviour
     #region Fields
 
     [SerializeField]
-    private Transform debugHitPointtransform;
-
-    private State state;
-    private Vector3 hookshotPosition;
-
+    private Hook hook;
     [SerializeField]
-    private FirstPersonController firstPersonController;
-    private Vector3 characterVelocityMomentum;
+    private float hookStartSpeed = 10f;
+    [SerializeField]
+    private float hookEndSpeed = 40f;
+    [SerializeField]
+    private float hookAcceleration = 10f;
+    [SerializeField]
+    private float hookDistance = 20f;
+
+    private Vector3 hookshotPosition;
+    private bool isHooking = false;
+    private Coroutine tryDoHookCoroutine = null;
+
+    private LayerMask environmentLayer { get { return LayerManager.Instance.environmentLayer; } }
+    private LayerMask holeLayer { get { return LayerManager.Instance.holeLayer; } }
 
     #endregion
 
     #region References
 
-    private Camera playerCamera { get { return PlayerCenterControl.Instance.Camera; } }
-    public CharacterController CharacterController;
+    private Camera cam { get { return PlayerCenterControl.Instance.Camera; } }
+    private FirstPersonController FirstPersonController { get { return PlayerCenterControl.Instance.FirstPersonController; } }
+    private CharacterController CharacterController { get { return FirstPersonController.CharacterController; } }
     private InputSystem input { get { return PlayerCenterControl.Instance.input; } }
 
     #endregion
 
-    private enum State
+    private void Update()
     {
-        Normal,
-        HookshotFlyingPlayer
-    }
-
-    private void Start()
-    {
-        Cursor.lockState = CursorLockMode.Locked;
-        state = State.Normal;
-    }
-
-    private void HandleHookshotStart()
-    {
-        if (input.Hook)
+        if (!isHooking)
         {
-            if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out RaycastHit raycastHit))
+            if (input.Hook)
             {
-                debugHitPointtransform.position = raycastHit.point;
-                hookshotPosition = raycastHit.point;
-                state = State.HookshotFlyingPlayer;
+                hook.Shoot(cam.transform.forward);
+                //if (tryDoHookCoroutine != null)
+                //    StopCoroutine(tryDoHookCoroutine);
+                //tryDoHookCoroutine = StartCoroutine(TryDoHook());
             }
         }
     }
 
-    private void HandleCharacterLook()
+    private IEnumerator TryDoHook()
     {
-        float lookX = Input.GetAxisRaw("Mouse X");
-        float lookY = Input.GetAxisRaw("Mouse Y");
-        //// no idea if this works
-    }
-
-    private void HandleCharacterMovement()
-    {
-        float moveX = Input.GetAxisRaw("Horizontal");
-        float moveY = Input.GetAxisRaw("Vertical");
-    }
-
-    private void Update()
-    {
-        switch (state)
+        Ray ray = new Ray(cam.transform.position, cam.transform.forward);
+        RaycastHit hit;
+        if (!Physics.Raycast(ray, out hit, hookDistance, holeLayer, QueryTriggerInteraction.Collide))
         {
-            default:
-            case State.Normal:
-                HandleCharacterLook();
-                HandleCharacterMovement();
-                HandleHookshotStart();
-                break;
-            case State.HookshotFlyingPlayer:
-                HandleHookshotMovement();
-                HandleCharacterLook();
-                break;
-
+            isHooking = Physics.Raycast(ray, out hit, hookDistance, environmentLayer, QueryTriggerInteraction.Ignore);
+            if (isHooking)
+            {
+                FirstPersonController.UseGravity = false;
+                float curSpeed = hookStartSpeed;
+                hookshotPosition = hit.point;
+                while (Vector3.Distance(transform.position, hookshotPosition) > 1f)
+                {
+                    Vector3 dir = (hookshotPosition - transform.position).normalized;
+                    CharacterController.Move(dir * curSpeed * Time.deltaTime);
+                    curSpeed = Mathf.Lerp(curSpeed, hookEndSpeed, hookAcceleration * Time.deltaTime);
+                    yield return null;
+                }
+                isHooking = false;
+                FirstPersonController.UseGravity = true;
+            }
         }
-        HandleHookshotStart();
-    }
-    private void HandleHookshotMovement()
-
-    {
-
-        Vector3 hookshotDir = (hookshotPosition - transform.position).normalized;
-
-        float hookshotSpeedMin = 10f;
-        float hookshotSpeedMax = 40f;
-
-        float hookshotSpeed = Mathf.Clamp(Vector3.Distance(transform.position, hookshotPosition), hookshotSpeedMin, hookshotSpeedMax);
-        float hookshotSpeedMultiplier = 2f;
-
-        firstPersonController.useGravity = false;
-
-        CharacterController.Move(hookshotDir * hookshotSpeed * hookshotSpeedMultiplier * Time.deltaTime);
-
-        float reachedHookshotPositionDistance = 1f;
-
-        if (Vector3.Distance(transform.position, hookshotPosition) < reachedHookshotPositionDistance)
+        else
         {
-            state = State.Normal;
-            firstPersonController.useGravity = true;
+            var hitDist = hit.distance;
+            ray.origin = hit.point + cam.transform.forward;
+
+            isHooking = Physics.Raycast(ray, out hit, hookDistance - hitDist, environmentLayer, QueryTriggerInteraction.Ignore);
+            if (isHooking)
+            {
+                FirstPersonController.UseGravity = false;
+                float curSpeed = hookStartSpeed;
+                hookshotPosition = hit.point;
+                while (Vector3.Distance(transform.position, hookshotPosition) > 1f)
+                {
+                    Vector3 dir = (hookshotPosition - transform.position).normalized;
+                    CharacterController.Move(dir * curSpeed * Time.deltaTime);
+                    curSpeed = Mathf.Lerp(curSpeed, hookEndSpeed, hookAcceleration * Time.deltaTime);
+                    yield return null;
+                }
+                isHooking = false;
+                FirstPersonController.UseGravity = true;
+            }
         }
-
-        if (TestInputDownHookshot())
-        {
-            state = State.Normal;
-            firstPersonController.useGravity = true;
-
-        }
-
-        if (TestInputJump())
-        {
-
-        }
-
     }
 
-    private bool TestInputDownHookshot()
-    {
-        return Input.GetKeyDown(KeyCode.E);
-    }
 
-    private bool TestInputJump()
-    {
-        return Input.GetKeyDown(KeyCode.Space);
-    }
 }
