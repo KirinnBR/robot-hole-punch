@@ -12,13 +12,16 @@ public class HookSystem : MonoBehaviour
     private State state;
     private Vector3 hookshotPosition;
 
+    [SerializeField]
+    private FirstPersonController firstPersonController;
+    private Vector3 characterVelocityMomentum;
+
     #endregion
 
     #region References
 
     private Camera playerCamera { get { return PlayerCenterControl.Instance.Camera; } }
-    private CharacterController characterController { get { return firstPersonController.CharacterController; } }
-    private FirstPersonController firstPersonController { get { return PlayerCenterControl.Instance.FirstPersonController; } }
+    public CharacterController CharacterController;
     private InputSystem input { get { return PlayerCenterControl.Instance.input; } }
 
     #endregion
@@ -41,10 +44,7 @@ public class HookSystem : MonoBehaviour
         {
             if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out RaycastHit raycastHit))
             {
-                if (debugHitPointtransform != null)
-                {
-                    debugHitPointtransform.position = raycastHit.point;
-                }
+                debugHitPointtransform.position = raycastHit.point;
                 hookshotPosition = raycastHit.point;
                 state = State.HookshotFlyingPlayer;
             }
@@ -53,16 +53,15 @@ public class HookSystem : MonoBehaviour
 
     private void HandleCharacterLook()
     {
-        float lookX = input.MouseY;
-        float lookY = input.MouseY;
+        float lookX = Input.GetAxisRaw("Mouse X");
+        float lookY = Input.GetAxisRaw("Mouse Y");
         //// no idea if this works
     }
 
     private void HandleCharacterMovement()
     {
-        firstPersonController.UseGravity = true;
-        float moveX = input.Horizontal;
-        float moveY = input.Vertical;
+        float moveX = Input.GetAxisRaw("Horizontal");
+        float moveY = Input.GetAxisRaw("Vertical");
     }
 
     private void Update()
@@ -76,20 +75,57 @@ public class HookSystem : MonoBehaviour
                 HandleHookshotStart();
                 break;
             case State.HookshotFlyingPlayer:
-                HandleHookshotMovement(); 
+                HandleHookshotMovement();
+                HandleCharacterLook();
                 break;
 
         }
         HandleHookshotStart();
     }
     private void HandleHookshotMovement()
-    {
-        firstPersonController.UseGravity = false;
 
+    {
         Vector3 hookshotDir = (hookshotPosition - transform.position).normalized;
 
-        float hookshotSpeed = 5f;
+        float hookshotSpeedMin = 10f;
+        float hookshotSpeedMax = 40f;
 
-        characterController.Move(hookshotDir * hookshotSpeed * Time.deltaTime);
+        float hookshotSpeed = Mathf.Clamp(Vector3.Distance(transform.position, hookshotPosition), hookshotSpeedMin, hookshotSpeedMax);
+        float hookshotSpeedMultiplier = 2f;
+
+        firstPersonController.useGravity = false;
+
+        CharacterController.Move(hookshotDir * hookshotSpeed * hookshotSpeedMultiplier * Time.deltaTime);
+
+        float reachedHookshotPositionDistance = 1f;
+
+        if (Vector3.Distance(transform.position, hookshotPosition) < reachedHookshotPositionDistance)
+        {
+            state = State.Normal;
+            firstPersonController.useGravity = true;
+        }
+
+        if (TestInputDownHookshot())
+        {
+            state = State.Normal;
+            firstPersonController.useGravity = true;
+
+        }
+
+        if (TestInputJump())
+        {
+
+        }
+
+    }
+
+    private bool TestInputDownHookshot()
+    {
+        return Input.GetKeyDown(KeyCode.E);
+    }
+
+    private bool TestInputJump()
+    {
+        return Input.GetKeyDown(KeyCode.Space);
     }
 }
