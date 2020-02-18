@@ -9,4 +9,10 @@ public class LayerManager : Singleton<LayerManager>
     public LayerMask defaultEnvironmentLayer;
     public LayerMask destructableEnvironmentLayer;
     public LayerMask holeLayer;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        DontDestroyOnLoad(Instance);
+    }
 }

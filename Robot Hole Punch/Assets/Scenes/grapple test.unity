@@ -366,7 +366,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 500882867bba0554b93681968cacf3a8, type: 2}
+  - {fileID: 2100000, guid: beba433f8732214418c8122902612886, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -534,7 +534,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 500882867bba0554b93681968cacf3a8, type: 2}
+  - {fileID: 2100000, guid: beba433f8732214418c8122902612886, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -639,7 +639,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: beba433f8732214418c8122902612886, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -775,6 +775,7 @@ GameObject:
   - component: {fileID: 662579747}
   - component: {fileID: 662579745}
   - component: {fileID: 662579753}
+  - component: {fileID: 662579754}
   m_Layer: 9
   m_Name: FPSController (1)
   m_TagString: Player
@@ -794,12 +795,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a15d7d52c84c004eb7da8e1fb9da5cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wallLayer:
-    serializedVersion: 2
-    m_Bits: 256
-  enemiesLayer:
-    serializedVersion: 2
-    m_Bits: 1024
   maxSecondsCharge: 2
   reloadAnimationTime: 2
   holePrefab: {fileID: 5507477539228298357, guid: 8df13f072db3d05429535525fc93f2cd,
@@ -1088,6 +1083,25 @@ MonoBehaviour:
   debugHitPointtransform: {fileID: 526039184}
   firstPersonController: {fileID: 662579750}
   CharacterController: {fileID: 662579751}
+--- !u!95 &662579754
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 662579744}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &667587598
 GameObject:
   m_ObjectHideFlags: 0
@@ -1650,7 +1664,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 500882867bba0554b93681968cacf3a8, type: 2}
+  - {fileID: 2100000, guid: beba433f8732214418c8122902612886, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

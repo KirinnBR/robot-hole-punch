@@ -85,6 +85,7 @@ public class HookSystem : MonoBehaviour
     private void HandleHookshotMovement()
 
     {
+
         Vector3 hookshotDir = (hookshotPosition - transform.position).normalized;
 
         float hookshotSpeedMin = 10f;

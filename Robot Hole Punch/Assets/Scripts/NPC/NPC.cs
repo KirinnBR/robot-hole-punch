@@ -22,12 +22,6 @@ public abstract class NPC : MonoBehaviour, IDamageable
     public float normalVisionAngle = 90f;
     [Tooltip("The distance, in meters, of the vision when the target is defined.")]
     public float wideDistanceVisionRadius = 20f;
-    [Tooltip("The layer in which the objects to detect are.")]
-    [SerializeField]
-    private LayerMask detectionLayer;
-    [Tooltip("The layer in which the obstacles are.")]
-    [SerializeField]
-    private LayerMask obstacleObjectsLayer;
 
     protected List<Transform> visibleObjects = new List<Transform>();
     protected bool hasVisibleObjects { get { return visibleObjects.Count > 0; } }
@@ -39,6 +33,14 @@ public abstract class NPC : MonoBehaviour, IDamageable
     protected NavMeshAgent agent;
 
     protected bool IsCloseEnoughToPoint(Vector3 point) => Vector3.Distance(transform.position, point) <= agent.stoppingDistance;
+
+	#endregion
+
+	#region References
+
+    protected LayerMask playerLayer { get { return LayerManager.Instance.playerLayer; } }
+    protected LayerMask defaultEnvironmentLayer { get { return LayerManager.Instance.defaultEnvironmentLayer; } }
+    protected LayerMask destructableEnvironmentLayer { get { return LayerManager.Instance.destructableEnvironmentLayer; } }
 
     #endregion
 
@@ -58,7 +60,7 @@ public abstract class NPC : MonoBehaviour, IDamageable
     protected void SearchObjects()
     {
         visibleObjects.Clear();
-        var objectsInVisionRadius = Physics.OverlapSphere(transform.position, normalVisionRadius, detectionLayer);
+        var objectsInVisionRadius = Physics.OverlapSphere(transform.position, normalVisionRadius, playerLayer);
         if (objectsInVisionRadius.Length > 0)
         {
             for (int i = 0; i < objectsInVisionRadius.Length; i++)
@@ -66,14 +68,14 @@ public abstract class NPC : MonoBehaviour, IDamageable
                 Vector3 dirToTarget = (objectsInVisionRadius[i].transform.position - transform.position).normalized;
                 if (Vector3.Angle(transform.forward, dirToTarget) < normalVisionAngle / 2f)
                 {
-                    if (!Physics.Linecast(transform.position, objectsInVisionRadius[i].transform.position, obstacleObjectsLayer))
+                    if (!Physics.Linecast(transform.position, objectsInVisionRadius[i].transform.position, defaultEnvironmentLayer | destructableEnvironmentLayer))
                     {
                         visibleObjects.Add(objectsInVisionRadius[i].transform);
                     }
                 }
             }
         }
-        var objectsInShortVisionRadius = Physics.OverlapSphere(transform.position, perifericVisionRadius, detectionLayer);
+        var objectsInShortVisionRadius = Physics.OverlapSphere(transform.position, perifericVisionRadius, playerLayer);
         if (objectsInShortVisionRadius.Length > 0)
         {
             foreach (var obj in objectsInShortVisionRadius)

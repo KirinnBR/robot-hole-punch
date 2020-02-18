@@ -14,6 +14,7 @@ public class CombatSystem : MonoBehaviour, IDamageable
     [SerializeField]
     private float reloadAnimationTime = 2f;
 
+    private Coroutine reloadCoroutine;
     private bool isCharging = false;
     private bool isReloading = false;
     private float currentTime = 0f;
@@ -105,28 +106,24 @@ public class CombatSystem : MonoBehaviour, IDamageable
             return;
         }
 
-        if (!Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, 100f, holesLayer, QueryTriggerInteraction.Collide))
+        if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, 100f, holesLayer, QueryTriggerInteraction.Collide))
         {
-            if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, 100f, destructableWallLayer, QueryTriggerInteraction.UseGlobal))
+            if (Physics.Raycast(hit.point + transform.forward, cam.transform.forward, out hit, 100f, destructableWallLayer, QueryTriggerInteraction.UseGlobal))
             {
-                if (hit.transform.CompareTag("Destructable"))
-                {
-                    InstantiateHole(hit, power);
-                }
+                InstantiateHole(hit, power);
             }
         }
         else
         {
-            //if (Physics.Raycast(hit.point + transform.forward, cam.transform.forward, out hit, 100f, destructableWallLayer, QueryTriggerInteraction.UseGlobal))
-            //{
-                //if (hit.transform.CompareTag("Destructable"))
-                //{
-                //    InstantiateHole(hit, power);
-                //}
-            //}
+            if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, 100f, destructableWallLayer, QueryTriggerInteraction.UseGlobal))
+            {
+                InstantiateHole(hit, power);
+            }
         }
-        
-        StartCoroutine(Reload());
+
+        if (reloadCoroutine != null)
+            StopCoroutine(reloadCoroutine);
+        reloadCoroutine = StartCoroutine(Reload());
     }
 
     private void InstantiateHole(RaycastHit hit, float power)
@@ -137,6 +134,8 @@ public class CombatSystem : MonoBehaviour, IDamageable
 
     private void UpdateAnimator()
     {
+        if (anim == null) return;
+
         anim.SetBool("Is Moving", controller.IsMoving);
         anim.SetBool("Is Charging", isCharging);
     }
