@@ -10,10 +10,6 @@ public class CombatSystem : MonoBehaviour, IDamageable
     [Header("Gun Settings")]
 
     [SerializeField]
-    private LayerMask wallLayer;
-    [SerializeField]
-    private LayerMask enemiesLayer;
-    [SerializeField]
     private float maxSecondsCharge = 2f;
     [SerializeField]
     private float reloadAnimationTime = 2f;
@@ -50,6 +46,9 @@ public class CombatSystem : MonoBehaviour, IDamageable
     private Camera cam { get { return PlayerCenterControl.Instance.Camera; } }
     private FirstPersonController controller { get { return PlayerCenterControl.Instance.FirstPersonController; } }
     private Animator anim { get { return PlayerCenterControl.Instance.Animator; } }
+    private LayerMask enemiesLayer { get { return LayerManager.Instance.enemyLayer; } }
+    private LayerMask holesLayer { get { return LayerManager.Instance.holeLayer; } }
+    private LayerMask destructableWallLayer { get { return LayerManager.Instance.destructableEnvironmentLayer; } }
     public float CurrentHealth { get; private set; }
 
     #endregion
@@ -95,22 +94,45 @@ public class CombatSystem : MonoBehaviour, IDamageable
     private void Shoot(float power)
     {
         isCharging = false;
-        if (Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, 100f, enemiesLayer, QueryTriggerInteraction.Ignore))
+        RaycastHit hit;
+
+        if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, 100f, enemiesLayer, QueryTriggerInteraction.UseGlobal))
         {
             if (hit.transform.TryGetComponent(out IDamageable dmg))
             {
                 dmg.TakeDamage(stats.damage * power);
             }
+            return;
         }
-        else if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, 100f, wallLayer, QueryTriggerInteraction.Ignore))
+
+        if (!Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, 100f, holesLayer, QueryTriggerInteraction.Collide))
         {
-            if (hit.transform.CompareTag("Destructable"))
+            if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, 100f, destructableWallLayer, QueryTriggerInteraction.UseGlobal))
             {
-                HoleBehaviour hole = Instantiate(holePrefab, hit.point, Quaternion.LookRotation(hit.normal, Vector3.up)).GetComponent<HoleBehaviour>();
-                hole.Configure(hit.collider, transform, holeMaxRadius * power);
+                if (hit.transform.CompareTag("Destructable"))
+                {
+                    InstantiateHole(hit, power);
+                }
             }
         }
+        else
+        {
+            //if (Physics.Raycast(hit.point + transform.forward, cam.transform.forward, out hit, 100f, destructableWallLayer, QueryTriggerInteraction.UseGlobal))
+            //{
+                //if (hit.transform.CompareTag("Destructable"))
+                //{
+                //    InstantiateHole(hit, power);
+                //}
+            //}
+        }
+        
         StartCoroutine(Reload());
+    }
+
+    private void InstantiateHole(RaycastHit hit, float power)
+    {
+        HoleBehaviour hole = Instantiate(holePrefab, hit.point, Quaternion.LookRotation(hit.normal, Vector3.up)).GetComponent<HoleBehaviour>();
+        hole.Configure(hit.collider, transform, holeMaxRadius * power);
     }
 
     private void UpdateAnimator()
