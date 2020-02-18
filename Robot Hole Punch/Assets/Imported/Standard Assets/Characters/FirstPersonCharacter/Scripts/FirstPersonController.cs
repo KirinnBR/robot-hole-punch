@@ -56,7 +56,6 @@ public class FirstPersonController : MonoBehaviour
 
     #endregion
 
-    public bool CanUseGravity { get; set; } = true;
     public bool IsMoving { get; private set; }
     private Camera Camera { get { return PlayerCenterControl.Instance.Camera; } }
     private bool m_Jump;
@@ -154,12 +153,6 @@ public class FirstPersonController : MonoBehaviour
         {
             m_MoveDir += Physics.gravity * m_GravityMultiplier * Time.fixedDeltaTime;
         }
-
-        if (!CanUseGravity)
-        {
-            m_MoveDir.y = 0f;
-        }
-
         m_CollisionFlags = m_CharacterController.Move(m_MoveDir * Time.fixedDeltaTime);
 
         ProgressStepCycle(speed);

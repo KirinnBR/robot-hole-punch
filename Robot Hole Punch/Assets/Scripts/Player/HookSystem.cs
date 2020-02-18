@@ -18,7 +18,6 @@ public class HookSystem : MonoBehaviour
 
     private Camera playerCamera { get { return PlayerCenterControl.Instance.Camera; } }
     private CharacterController characterController { get { return PlayerCenterControl.Instance.CharacterController; } }
-    private FirstPersonController firstPersonController { get { return PlayerCenterControl.Instance.FirstPersonController; } }
     private InputSystem input { get { return PlayerCenterControl.Instance.input; } }
 
     #endregion
@@ -57,7 +56,6 @@ public class HookSystem : MonoBehaviour
 
     private void HandleCharacterMovement()
     {
-        firstPersonController.CanUseGravity = true;
         float moveX = Input.GetAxisRaw("Horizontal");
         float moveY = Input.GetAxisRaw("Vertical");
     }
@@ -81,13 +79,10 @@ public class HookSystem : MonoBehaviour
     }
     private void HandleHookshotMovement()
     {
-        firstPersonController.CanUseGravity = false;
-
-        Vector3 hookshotDir = (hookshotPosition - transform.position).normalized;
+        Vector3 hookshotDir = hookshotPosition - transform.position.normalized;
 
         float hookshotSpeed = 5f;
 
         characterController.Move(hookshotDir * hookshotSpeed * Time.deltaTime);
     }
-
 }
