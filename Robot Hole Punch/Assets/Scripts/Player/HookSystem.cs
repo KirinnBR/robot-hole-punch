@@ -12,6 +12,10 @@ public class HookSystem : MonoBehaviour
     private State state;
     private Vector3 hookshotPosition;
 
+    [SerializeField]
+    private FirstPersonController firstPersonController;
+    private Vector3 characterVelocityMomentum;
+
     #endregion
 
     #region References
@@ -71,18 +75,57 @@ public class HookSystem : MonoBehaviour
                 HandleHookshotStart();
                 break;
             case State.HookshotFlyingPlayer:
-                HandleHookshotMovement(); 
+                HandleHookshotMovement();
+                HandleCharacterLook();
                 break;
 
         }
         HandleHookshotStart();
     }
     private void HandleHookshotMovement()
+
     {
-        Vector3 hookshotDir = hookshotPosition - transform.position.normalized;
+        Vector3 hookshotDir = (hookshotPosition - transform.position).normalized;
 
-        float hookshotSpeed = 5f;
+        float hookshotSpeedMin = 10f;
+        float hookshotSpeedMax = 40f;
 
-        characterController.Move(hookshotDir * hookshotSpeed * Time.deltaTime);
+        float hookshotSpeed = Mathf.Clamp(Vector3.Distance(transform.position, hookshotPosition), hookshotSpeedMin, hookshotSpeedMax);
+        float hookshotSpeedMultiplier = 2f;
+
+        firstPersonController.useGravity = false;
+
+        characterController.Move(hookshotDir * hookshotSpeed * hookshotSpeedMultiplier * Time.deltaTime);
+
+        float reachedHookshotPositionDistance = 1f;
+
+        if (Vector3.Distance(transform.position, hookshotPosition) < reachedHookshotPositionDistance)
+        {
+            state = State.Normal;
+            firstPersonController.useGravity = true;
+        }
+
+        if (TestInputDownHookshot())
+        {
+            state = State.Normal;
+            firstPersonController.useGravity = true;
+
+        }
+
+        if (TestInputJump())
+        {
+
+        }
+
+    }
+
+    private bool TestInputDownHookshot()
+    {
+        return Input.GetKeyDown(KeyCode.E);
+    }
+
+    private bool TestInputJump()
+    {
+        return Input.GetKeyDown(KeyCode.Space);
     }
 }

@@ -70,6 +70,8 @@ public class FirstPersonController : MonoBehaviour
     private bool m_Jumping;
     private AudioSource m_AudioSource;
 
+    public bool useGravity = true;
+
     public bool CanRun { get; set; }
 
     private InputSystem input { get { return PlayerCenterControl.Instance.input; } }
@@ -153,6 +155,12 @@ public class FirstPersonController : MonoBehaviour
         {
             m_MoveDir += Physics.gravity * m_GravityMultiplier * Time.fixedDeltaTime;
         }
+
+        if (!useGravity)
+        {
+            m_MoveDir.y = 0;
+        }
+
         m_CollisionFlags = m_CharacterController.Move(m_MoveDir * Time.fixedDeltaTime);
 
         ProgressStepCycle(speed);
