@@ -20,7 +20,7 @@ public class HoleBehaviour : MonoBehaviour
     {
         link = GetComponent<NavMeshLink>();
     }
-    
+
     void FixedUpdate()
     {
         if (Physics.CheckSphere(transform.position, radius, playerLayer, QueryTriggerInteraction.Ignore))
@@ -55,7 +55,7 @@ public class HoleBehaviour : MonoBehaviour
         currentHoleIndex = validHoles.Count - 1;
 
         //Setting up hole transform.
-        transform.localScale = new Vector3(radius * 2, radius * 2, parent.transform.localScale.y);
+        transform.localScale = new Vector3(radius * 2, radius * 2, parent.transform.localScale.y + 0.1f);
         transform.parent = parentCollider.transform;
         transform.localPosition = new Vector3(transform.localPosition.x, 0, transform.localPosition.z);
 

@@ -20,15 +20,11 @@ public class InputSystem : MonoBehaviour
     public bool Hook { get { return Input.GetKeyDown(hookKey); } }
     public float Horizontal { get; private set; }
     public float Vertical { get; private set; }
-    public float MouseX { get; private set; }
-    public float MouseY { get; private set; }
 
     private void Update()
     {
         Horizontal = Input.GetAxisRaw("Horizontal");
         Vertical = Input.GetAxisRaw("Vertical");
-        MouseX = Input.GetAxisRaw("Mouse X");
-        MouseY = Input.GetAxisRaw("Mouse Y");
     }
 
 }
