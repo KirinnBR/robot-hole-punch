@@ -6,8 +6,7 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshLink))]
 public class HoleBehaviour : MonoBehaviour
 {
-    [SerializeField]
-    private LayerMask playerLayer;
+    private LayerMask playerLayer { get { return LayerManager.Instance.playerLayer; } }
 
     private static List<bool> validHoles = new List<bool>();
     private int currentHoleIndex = 0;
@@ -16,28 +15,14 @@ public class HoleBehaviour : MonoBehaviour
     private Transform player;
     private float radius = 3f;
 
-    private MeshRenderer rend;
     private NavMeshLink link;
     private void Awake()
     {
-        rend = GetComponent<MeshRenderer>();
         link = GetComponent<NavMeshLink>();
     }
     
     void FixedUpdate()
     {
-        if (Physics.Linecast(transform.position, player.position, out RaycastHit hit))
-        {
-            var tag = hit.transform.tag;
-            if (tag.Equals("Transparent") || tag.Equals("Destructable"))
-            {
-                rend.enabled = false;
-            }
-            else
-            {
-                rend.enabled = true;
-            }
-        }
         if (Physics.CheckSphere(transform.position, radius, playerLayer, QueryTriggerInteraction.Ignore))
         {
             validHoles[currentHoleIndex] = true;
