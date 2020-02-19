@@ -729,7 +729,7 @@ GameObject:
   - component: {fileID: 2042292721}
   - component: {fileID: 2042292726}
   - component: {fileID: 2042292725}
-  m_Layer: 12
+  m_Layer: 11
   m_Name: Super Enemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -825,6 +825,9 @@ MonoBehaviour:
   normalVisionRadius: 15
   normalVisionAngle: 120
   wideDistanceVisionRadius: 30
+  hitSphereOffset: {x: 0, y: 0.75, z: 1.5}
+  hitSphereRadius: 0.8
+  timeBetweenAttacks: 3
 --- !u!195 &2042292726
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -835,10 +838,10 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 3.5
-  m_Acceleration: 8
+  m_Speed: 5
+  m_Acceleration: 30
   avoidancePriority: 50
-  m_AngularSpeed: 120
+  m_AngularSpeed: 1800
   m_StoppingDistance: 1.5
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
@@ -953,17 +956,17 @@ PrefabInstance:
     - target: {fileID: 2052661030387267386, guid: 193aeb8154e90d04f96deb82f247ce95,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.8955222
+      value: 27.8
       objectReference: {fileID: 0}
     - target: {fileID: 2052661030387267386, guid: 193aeb8154e90d04f96deb82f247ce95,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.75
+      value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 2052661030387267386, guid: 193aeb8154e90d04f96deb82f247ce95,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -13.717077
+      value: 27
       objectReference: {fileID: 0}
     - target: {fileID: 2052661030387267386, guid: 193aeb8154e90d04f96deb82f247ce95,
         type: 3}

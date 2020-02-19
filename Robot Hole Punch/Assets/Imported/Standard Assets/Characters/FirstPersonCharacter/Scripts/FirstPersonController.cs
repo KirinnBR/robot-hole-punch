@@ -5,7 +5,6 @@ using UnityStandardAssets.Utility;
 using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(CharacterController))]
-[RequireComponent(typeof(AudioSource))]
 public class FirstPersonController : MonoBehaviour
 {
 
@@ -27,6 +26,19 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField]
     private float m_GravityMultiplier;
 
+    public bool CanRun { get; set; }
+    public bool IsMoving { get; private set; }
+    public bool UseGravity { get; set; } = true;
+    private bool m_Jump;
+    private Vector2 m_Input;
+    private Vector3 m_MoveDir = Vector3.zero;
+    private CharacterController m_CharacterController;
+    public CharacterController CharacterController { get { return m_CharacterController; } }
+    private CollisionFlags m_CollisionFlags;
+    private bool m_PreviouslyGrounded;
+    private Vector3 m_OriginalCameraPosition;
+    private bool m_Jumping;
+
     #endregion
 
     #region Rotation Settings
@@ -44,6 +56,9 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField]
     private float m_StepInterval;
 
+    private float m_StepCycle;
+    private float m_NextStep;
+
     #endregion
 
     #region Audio Settings
@@ -51,31 +66,22 @@ public class FirstPersonController : MonoBehaviour
     [Header("Audio Settings")]
 
     [SerializeField] private AudioClip[] m_FootstepSounds;    // an array of footstep sounds that will be randomly selected from.
-    [SerializeField] private AudioClip m_JumpSound;           // the sound played when character leaves the ground.
+    [SerializeField] private AudioClip[] m_JumpSounds;           // the sound played when character leaves the ground.
     [SerializeField] private AudioClip m_LandSound;           // the sound played when character touches back on ground.
+
+    public bool UseSound { get; set; } = true;
 
     #endregion
 
-    public bool IsMoving { get; private set; }
+    #region References
+
     private Camera Camera { get { return PlayerCenterControl.Instance.Camera; } }
-    private bool m_Jump;
-    private Vector2 m_Input;
-    private Vector3 m_MoveDir = Vector3.zero;
-    private CharacterController m_CharacterController;
-    public CharacterController CharacterController { get { return m_CharacterController; } }
-    private CollisionFlags m_CollisionFlags;
-    private bool m_PreviouslyGrounded;
-    private Vector3 m_OriginalCameraPosition;
-    private float m_StepCycle;
-    private float m_NextStep;
-    private bool m_Jumping;
-    private AudioSource m_AudioSource;
-
-
-    public bool UseGravity { get; set; } = true;
-    public bool CanRun { get; set; }
-
+    private new AudioSource audio { get { return PlayerCenterControl.Instance.Audio; } }
     private InputSystem input { get { return PlayerCenterControl.Instance.input; } }
+
+    #endregion
+
+
 
     // Use this for initialization
     private void Start()
@@ -86,7 +92,6 @@ public class FirstPersonController : MonoBehaviour
         m_StepCycle = 0f;
         m_NextStep = m_StepCycle / 2f;
         m_Jumping = false;
-        m_AudioSource = GetComponent<AudioSource>();
         m_MouseLook.Init(transform, Camera.transform);
     }
 
@@ -119,8 +124,10 @@ public class FirstPersonController : MonoBehaviour
 
     private void PlayLandingSound()
     {
-        m_AudioSource.clip = m_LandSound;
-        m_AudioSource.Play();
+        if (!UseSound) return;
+
+        audio.clip = m_LandSound;
+        audio.Play();
         m_NextStep = m_StepCycle + .5f;
     }
 
@@ -173,8 +180,17 @@ public class FirstPersonController : MonoBehaviour
 
     private void PlayJumpSound()
     {
-        m_AudioSource.clip = m_JumpSound;
-        m_AudioSource.Play();
+        if (!UseSound) return;
+
+
+        // pick & play a random footstep sound from the array,
+        // excluding sound at index 0
+        int n = Random.Range(1, m_JumpSounds.Length);
+        audio.clip = m_JumpSounds[n];
+        audio.Play();
+        // move picked sound to index 0 so it's not picked next time
+        m_JumpSounds[n] = m_JumpSounds[0];
+        m_JumpSounds[0] = audio.clip;
     }
 
 
@@ -199,18 +215,18 @@ public class FirstPersonController : MonoBehaviour
 
     private void PlayFootStepAudio()
     {
-        if (!m_CharacterController.isGrounded)
+        if (!m_CharacterController.isGrounded || !UseSound)
         {
             return;
         }
         // pick & play a random footstep sound from the array,
         // excluding sound at index 0
         int n = Random.Range(1, m_FootstepSounds.Length);
-        m_AudioSource.clip = m_FootstepSounds[n];
-        m_AudioSource.PlayOneShot(m_AudioSource.clip);
+        audio.clip = m_FootstepSounds[n];
+        audio.PlayOneShot(audio.clip);
         // move picked sound to index 0 so it's not picked next time
         m_FootstepSounds[n] = m_FootstepSounds[0];
-        m_FootstepSounds[0] = m_AudioSource.clip;
+        m_FootstepSounds[0] = audio.clip;
     }
 
 

@@ -197,7 +197,7 @@ MonoBehaviour:
   m_WalkSpeed: 5
   m_RunSpeed: 10
   m_RunstepLenghten: 0.7
-  m_JumpSpeed: 10
+  m_JumpSpeed: 15
   m_StickToGroundForce: 10
   m_GravityMultiplier: 2
   m_MouseLook:
@@ -272,8 +272,12 @@ MonoBehaviour:
   m_FootstepSounds:
   - {fileID: 8300000, guid: 42e65e088b3f4374e851b8dbd38f3df9, type: 3}
   - {fileID: 8300000, guid: 8bc94ec6ed537e743b481638bdcd503d, type: 3}
-  m_JumpSound: {fileID: 8300000, guid: 5897aeed9b676024fbb8c694b421a861, type: 3}
-  m_LandSound: {fileID: 8300000, guid: 3b09d59f4499d45428baa7a21e954296, type: 3}
+  m_JumpSounds:
+  - {fileID: 8300000, guid: 77a2c2045340f1f4fba49767d8712132, type: 3}
+  - {fileID: 8300000, guid: bd1b2c42ba14f734598f4a7a2b1bb8f7, type: 3}
+  - {fileID: 8300000, guid: ef9b012fce1dbec469e5e4dc9a7a7262, type: 3}
+  - {fileID: 8300000, guid: a763901238e52754dae2f4be9afe129d, type: 3}
+  m_LandSound: {fileID: 8300000, guid: 87cde0fb9da5ee84b99d5afb66054367, type: 3}
 --- !u!54 &2052661030392252538
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -404,6 +408,9 @@ MonoBehaviour:
     type: 3}
   holeMaxRadius: 5
   stats: {fileID: 11400000, guid: 506ee8240cbe9b448bd49fcc17e1d23c, type: 2}
+  laserCharge: {fileID: 8300000, guid: 7a91eec4bda74be44a98f4dc6de68cb4, type: 3}
+  laserShot: {fileID: 8300000, guid: 46425c34af0da5345b491a57f16b56e1, type: 3}
+  laserReload: {fileID: 8300000, guid: 37e7c2287ad1ae14bb07541f789aa9f8, type: 3}
 --- !u!114 &2052661030648006937
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -469,6 +476,7 @@ MonoBehaviour:
   hookStartSpeed: 10
   hookEndSpeed: 40
   hookAcceleration: 10
+  hookClip: {fileID: 8300000, guid: 6d3645ff1285f09419bfdbbe8fcf248d, type: 3}
   hookDistance: 20
 --- !u!1001 &315160394285408404
 PrefabInstance:
