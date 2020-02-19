@@ -7,7 +7,7 @@ using UnityEngine.AI;
 public abstract class NPC : MonoBehaviour, IDamageable
 {
     [SerializeField]
-    private Stats stats;
+    protected Stats stats;
 
     #region Object Detection Settings
 
@@ -23,8 +23,9 @@ public abstract class NPC : MonoBehaviour, IDamageable
     [Tooltip("The distance, in meters, of the vision when the target is defined.")]
     public float wideDistanceVisionRadius = 20f;
 
-    protected List<Transform> visibleObjects = new List<Transform>();
-    protected bool hasVisibleObjects { get { return visibleObjects.Count > 0; } }
+    protected bool seePlayer;
+    protected Transform playerTransform;
+    protected IDamageable playerDMG;
 
     #endregion
 
@@ -58,33 +59,36 @@ public abstract class NPC : MonoBehaviour, IDamageable
     }
     protected void SearchObjects()
     {
-        visibleObjects.Clear();
+        seePlayer = false;
+
         var objectsInVisionRadius = Physics.OverlapSphere(transform.position, normalVisionRadius, playerLayer);
-        if (objectsInVisionRadius.Length > 0)
+        if (objectsInVisionRadius.Length != 0)
         {
-            for (int i = 0; i < objectsInVisionRadius.Length; i++)
+            Vector3 dirToTarget = (objectsInVisionRadius[0].transform.position - transform.position).normalized;
+            if (Vector3.Angle(transform.forward, dirToTarget) < normalVisionAngle / 2f)
             {
-                Vector3 dirToTarget = (objectsInVisionRadius[i].transform.position - transform.position).normalized;
-                if (Vector3.Angle(transform.forward, dirToTarget) < normalVisionAngle / 2f)
+                if (!Physics.Linecast(transform.position, objectsInVisionRadius[0].transform.position, environmentLayer))
                 {
-                    if (!Physics.Linecast(transform.position, objectsInVisionRadius[i].transform.position, environmentLayer))
-                    {
-                        visibleObjects.Add(objectsInVisionRadius[i].transform);
-                    }
+                    AssignPlayer(objectsInVisionRadius[0].transform);
                 }
             }
         }
-        var objectsInShortVisionRadius = Physics.OverlapSphere(transform.position, perifericVisionRadius, playerLayer);
-        if (objectsInShortVisionRadius.Length > 0)
+
+        if (!seePlayer)
         {
-            foreach (var obj in objectsInShortVisionRadius)
+            var objectsInShortVisionRadius = Physics.OverlapSphere(transform.position, perifericVisionRadius, playerLayer);
+            if (objectsInShortVisionRadius.Length != 0)
             {
-                if (!visibleObjects.Contains(obj.transform))
-                {
-                    visibleObjects.Add(obj.transform);
-                }
+                AssignPlayer(objectsInVisionRadius[0].transform);
             }
         }
+    }
+
+    private void AssignPlayer(Transform playerT)
+    {
+        seePlayer = true;
+        playerTransform = playerT;
+        playerDMG = playerTransform.GetComponent<IDamageable>();
     }
 
     public Vector3 DirFromAngle(float angle, bool isGlobal)
