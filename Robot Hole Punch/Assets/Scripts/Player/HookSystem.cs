@@ -7,28 +7,25 @@ public class HookSystem : MonoBehaviour
     #region Fields
 
     [SerializeField]
-    private Hook hook;
+    private GameObject hook;
+    [SerializeField]
+    private Transform hookSpawn;
     [SerializeField]
     private float hookStartSpeed = 10f;
     [SerializeField]
     private float hookEndSpeed = 40f;
     [SerializeField]
     private float hookAcceleration = 10f;
-    [SerializeField]
-    private float hookDistance = 20f;
 
-    private Vector3 hookshotPosition;
+    public float hookDistance = 20f;
+
     private bool isHooking = false;
-    private Coroutine tryDoHookCoroutine = null;
-
-    private LayerMask environmentLayer { get { return LayerManager.Instance.environmentLayer; } }
-    private LayerMask holeLayer { get { return LayerManager.Instance.holeLayer; } }
+    private Coroutine goToDestinationCoroutine = null;
 
     #endregion
 
     #region References
 
-    private Camera cam { get { return PlayerCenterControl.Instance.Camera; } }
     private FirstPersonController FirstPersonController { get { return PlayerCenterControl.Instance.FirstPersonController; } }
     private CharacterController CharacterController { get { return FirstPersonController.CharacterController; } }
     private InputSystem input { get { return PlayerCenterControl.Instance.input; } }
@@ -41,59 +38,42 @@ public class HookSystem : MonoBehaviour
         {
             if (input.Hook)
             {
-                hook.Shoot(cam.transform.forward);
-                //if (tryDoHookCoroutine != null)
-                //    StopCoroutine(tryDoHookCoroutine);
-                //tryDoHookCoroutine = StartCoroutine(TryDoHook());
+                isHooking = true;
+                Hook grapplingHook = Instantiate(hook, hookSpawn.position, hookSpawn.rotation).GetComponent<Hook>();
+                grapplingHook.MaxDistance = hookDistance;
+                grapplingHook.onHookShotComplete.AddListener(CheckHook);
             }
         }
     }
 
-    private IEnumerator TryDoHook()
+    public void CheckHook(Vector3 destination)
     {
-        Ray ray = new Ray(cam.transform.position, cam.transform.forward);
-        RaycastHit hit;
-        if (!Physics.Raycast(ray, out hit, hookDistance, holeLayer, QueryTriggerInteraction.Collide))
+        if (destination == Vector3.zero || Vector3.Distance(transform.position, destination) < 3f)
         {
-            isHooking = Physics.Raycast(ray, out hit, hookDistance, environmentLayer, QueryTriggerInteraction.Ignore);
-            if (isHooking)
-            {
-                FirstPersonController.UseGravity = false;
-                float curSpeed = hookStartSpeed;
-                hookshotPosition = hit.point;
-                while (Vector3.Distance(transform.position, hookshotPosition) > 1f)
-                {
-                    Vector3 dir = (hookshotPosition - transform.position).normalized;
-                    CharacterController.Move(dir * curSpeed * Time.deltaTime);
-                    curSpeed = Mathf.Lerp(curSpeed, hookEndSpeed, hookAcceleration * Time.deltaTime);
-                    yield return null;
-                }
-                isHooking = false;
-                FirstPersonController.UseGravity = true;
-            }
+            isHooking = false;
+            return;
         }
-        else
-        {
-            var hitDist = hit.distance;
-            ray.origin = hit.point + cam.transform.forward;
 
-            isHooking = Physics.Raycast(ray, out hit, hookDistance - hitDist, environmentLayer, QueryTriggerInteraction.Ignore);
-            if (isHooking)
-            {
-                FirstPersonController.UseGravity = false;
-                float curSpeed = hookStartSpeed;
-                hookshotPosition = hit.point;
-                while (Vector3.Distance(transform.position, hookshotPosition) > 1f)
-                {
-                    Vector3 dir = (hookshotPosition - transform.position).normalized;
-                    CharacterController.Move(dir * curSpeed * Time.deltaTime);
-                    curSpeed = Mathf.Lerp(curSpeed, hookEndSpeed, hookAcceleration * Time.deltaTime);
-                    yield return null;
-                }
-                isHooking = false;
-                FirstPersonController.UseGravity = true;
-            }
+        if (goToDestinationCoroutine != null)
+            StopCoroutine(goToDestinationCoroutine);
+        goToDestinationCoroutine = StartCoroutine(GoToDestination(destination));
+    }
+
+    private IEnumerator GoToDestination(Vector3 destination)
+    {
+        FirstPersonController.UseGravity = false;
+        float curSpeed = hookStartSpeed;
+
+        while (Vector3.Distance(transform.position, destination) > 1f)
+        {
+            Vector3 dir = (destination - transform.position).normalized;
+            CharacterController.Move(dir * curSpeed * Time.deltaTime);
+            curSpeed = Mathf.Lerp(curSpeed, hookEndSpeed, hookAcceleration * Time.deltaTime);
+            yield return null;
         }
+
+        FirstPersonController.UseGravity = true;
+        isHooking = false;
     }
 
 

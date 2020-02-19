@@ -1,29 +1,49 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
+[RequireComponent(typeof(LineRenderer))]
 public class Hook : MonoBehaviour
 {
 
-    private bool isColliding = false;
-    Vector3 dir;
+    public class HookEvent : UnityEvent<Vector3> { }
+    [HideInInspector]
+    public HookEvent onHookShotComplete = new HookEvent();
+    public float MaxDistance { get; set; } = 10f;
+    private LayerMask environmentLayer { get { return LayerManager.Instance.environmentLayer; } }
+    private float distanceWent = 0f;
 
-    public void Shoot(Vector3 dir)
+    private LineRenderer renderer;
+
+    private void Start()
     {
-        this.dir = dir;
-        StartCoroutine(DoShoot());
+        renderer = GetComponent<LineRenderer>();
+        renderer.SetPosition(0, transform.position);
     }
 
-    private IEnumerator DoShoot()
+    private void Update()
     {
-        var touch = Physics.CheckSphere(transform.position, 1f);
-        while (touch)
+        if (distanceWent > MaxDistance)
         {
-            touch = Physics.CheckSphere(transform.position, 1f);
-            Debug.Log(touch);
-            transform.position += dir / 3;
-            yield return null;
+            onHookShotComplete.Invoke(Vector3.zero);
+            Destroy(gameObject);
         }
+
+        if (Physics.CheckSphere(transform.position, 0.5f, environmentLayer, QueryTriggerInteraction.UseGlobal))
+        {
+            onHookShotComplete.Invoke(transform.position);
+            Destroy(gameObject);
+        }
+
+        var fwd = Vector3.forward / 2;
+
+        transform.Translate(fwd);
+        renderer.SetPosition(1, transform.position);
+        distanceWent += fwd.magnitude;
     }
+
+
+
 
 }
