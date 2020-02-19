@@ -63,7 +63,7 @@ public class CombatSystem : MonoBehaviour, IDamageable
     private FirstPersonController firstPersonController { get { return PlayerCenterControl.Instance.FirstPersonController; } }
     private HookSystem hook { get { return PlayerCenterControl.Instance.Hook; } }
     private Animator anim { get { return PlayerCenterControl.Instance.Animator; } }
-    private AudioSource audio { get { return PlayerCenterControl.Instance.Audio; } }
+    public AudioSource audio { get { return PlayerCenterControl.Instance.Audio; } }
     private LayerMask enemiesLayer { get { return LayerManager.Instance.enemyLayer; } }
     private LayerMask holesLayer { get { return LayerManager.Instance.holeLayer; } }
     private LayerMask environmentLayer { get { return LayerManager.Instance.environmentLayer; } }
@@ -120,7 +120,7 @@ public class CombatSystem : MonoBehaviour, IDamageable
         RaycastHit hit;
 
         audio.clip = laserShot;
-        audio.Play();
+        audio.PlayOneShot(laserShot);
 
         if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, 100f, enemiesLayer, QueryTriggerInteraction.UseGlobal))
         {

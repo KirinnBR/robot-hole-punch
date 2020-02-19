@@ -127,7 +127,7 @@ public class FirstPersonController : MonoBehaviour
         if (!UseSound) return;
 
         audio.clip = m_LandSound;
-        audio.Play();
+        audio.PlayOneShot(m_LandSound);
         m_NextStep = m_StepCycle + .5f;
     }
 
@@ -187,7 +187,7 @@ public class FirstPersonController : MonoBehaviour
         // excluding sound at index 0
         int n = Random.Range(1, m_JumpSounds.Length);
         audio.clip = m_JumpSounds[n];
-        audio.Play();
+        audio.PlayOneShot(m_JumpSounds[n]);
         // move picked sound to index 0 so it's not picked next time
         m_JumpSounds[n] = m_JumpSounds[0];
         m_JumpSounds[0] = audio.clip;
