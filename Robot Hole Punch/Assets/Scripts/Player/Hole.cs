@@ -39,17 +39,19 @@ public class Hole : MonoBehaviour
         transform.localScale = new Vector3(radius * 2, radius * 2, zScale);
 
         //Setting up NavMeshLink.
-        var yAxis = player.position.y - transform.position.y - 0.2f;
-        if (Mathf.Abs(yAxis) > 5f)
-            yAxis = 0f;
-        link.startPoint = (Vector3.forward * transform.localScale.z) + (Vector3.up * yAxis);
-        link.endPoint = (-Vector3.forward * transform.localScale.z) + (Vector3.up * yAxis);
+        Debug.DrawRay(transform.position + Vector3.forward * (zScale + 1f), Vector3.down * 5f, Color.red, 100f, false);
+        if (Physics.Raycast(transform.position + Vector3.forward * (zScale + 1f), Vector3.down, out RaycastHit hit, 5f, environmentLayer, QueryTriggerInteraction.Ignore))
+        {
+            var yAxis = hit.distance;
+            link.startPoint = (Vector3.forward * (zScale + 0.5f)) + (Vector3.down * yAxis);
+            link.endPoint = (-Vector3.forward * (zScale + 0.5f)) + (Vector3.down * yAxis);
+        }
     }
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, Radius);
+        //Gizmos.color = Color.red;
+        //Gizmos.DrawWireSphere(transform.position, Radius);
     }
 
 }

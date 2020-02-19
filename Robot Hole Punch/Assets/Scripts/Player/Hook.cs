@@ -14,7 +14,7 @@ public class Hook : MonoBehaviour
     private LayerMask environmentLayer { get { return LayerManager.Instance.environmentLayer; } }
     private float distanceWent = 0f;
 
-    private LineRenderer renderer;
+    private new LineRenderer renderer;
 
     private void Start()
     {
