@@ -60,9 +60,9 @@ public class GameManager : Singleton<GameManager>
 		Debug.Log("Unloaded");
 	}
 
-	public void LoadLevel(string levelName)
+	public void LoadLevel(string levelName, LoadSceneMode loadSceneMode)
 	{
-		var ao = SceneManager.LoadSceneAsync(levelName, LoadSceneMode.Single);
+		var ao = SceneManager.LoadSceneAsync(levelName, loadSceneMode);
 
 		if (ao == null)
 		{

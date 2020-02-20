@@ -67,7 +67,7 @@ public class UIManager : Singleton<UIManager>
 
     private void StartButtonPressed()
     {
-        GameManager.Instance.LoadLevel("Level");
+        GameManager.Instance.LoadLevel("Level", UnityEngine.SceneManagement.LoadSceneMode.Single);
         GameManager.Instance.ChangeGameState(GameManager.GameState.InGame);
     }
 

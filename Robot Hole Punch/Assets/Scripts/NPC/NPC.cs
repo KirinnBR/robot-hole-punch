@@ -13,6 +13,7 @@ public abstract class NPC : MonoBehaviour, IDamageable
 
     [Header("Object Detection Settings")]
 
+    public Transform reference;
     [Tooltip("The distance, in meters, of the periferic vision.")]
     public float perifericVisionRadius = 3f;
     [Tooltip("The distance, in meters, of the normal vision.")]
@@ -35,9 +36,9 @@ public abstract class NPC : MonoBehaviour, IDamageable
 
     protected bool IsCloseEnoughToPoint(Vector3 point) => Vector3.Distance(transform.position, point) <= agent.stoppingDistance;
 
-	#endregion
+    #endregion
 
-	#region References
+    #region References
 
     protected LayerMask playerLayer { get { return LayerManager.Instance.playerLayer; } }
     protected LayerMask environmentLayer { get { return LayerManager.Instance.environmentLayer; } }
@@ -59,29 +60,50 @@ public abstract class NPC : MonoBehaviour, IDamageable
     }
     protected void SearchObjects()
     {
-        seePlayer = false;
-
-        var objectsInVisionRadius = Physics.OverlapSphere(transform.position, normalVisionRadius, playerLayer);
-        if (objectsInVisionRadius.Length != 0)
+        if (seePlayer)
         {
-            Vector3 dirToTarget = (objectsInVisionRadius[0].transform.position - transform.position).normalized;
-            if (Vector3.Angle(transform.forward, dirToTarget) < normalVisionAngle / 2f)
+            if (Physics.Linecast(transform.position, playerTransform.position, environmentLayer))
             {
-                if (!Physics.Linecast(transform.position, objectsInVisionRadius[0].transform.position, environmentLayer))
+                UnassignPlayer();
+                return;
+            }
+            if (Vector3.Distance(transform.position, playerTransform.position) >= wideDistanceVisionRadius)
+            {
+                UnassignPlayer();
+                return;
+            }
+        }
+        else
+        {
+            var objectsInVisionRadius = Physics.OverlapSphere(transform.position, normalVisionRadius, playerLayer);
+            if (objectsInVisionRadius.Length != 0)
+            {
+                Vector3 dirToTarget = (objectsInVisionRadius[0].transform.position - transform.position).normalized;
+                if (Vector3.Angle(reference.forward, dirToTarget) < normalVisionAngle / 2f)
+                {
+                    if (!Physics.Linecast(transform.position, objectsInVisionRadius[0].transform.position, environmentLayer))
+                    {
+                        AssignPlayer(objectsInVisionRadius[0].transform);
+                    }
+                }
+            }
+
+            if (!seePlayer)
+            {
+                var objectsInShortVisionRadius = Physics.OverlapSphere(transform.position, perifericVisionRadius, playerLayer);
+                if (objectsInShortVisionRadius.Length != 0)
                 {
                     AssignPlayer(objectsInVisionRadius[0].transform);
                 }
             }
         }
+    }
 
-        if (!seePlayer)
-        {
-            var objectsInShortVisionRadius = Physics.OverlapSphere(transform.position, perifericVisionRadius, playerLayer);
-            if (objectsInShortVisionRadius.Length != 0)
-            {
-                AssignPlayer(objectsInVisionRadius[0].transform);
-            }
-        }
+    private void UnassignPlayer()
+    {
+        seePlayer = false;
+        playerTransform = null;
+        playerDMG = null;
     }
 
     private void AssignPlayer(Transform playerT)
@@ -94,7 +116,7 @@ public abstract class NPC : MonoBehaviour, IDamageable
     public Vector3 DirFromAngle(float angle, bool isGlobal)
     {
         if (!isGlobal)
-            angle += transform.eulerAngles.y;
+            angle += reference.eulerAngles.y;
         return new Vector3(Mathf.Sin(angle * Mathf.Deg2Rad), 0, Mathf.Cos(angle * Mathf.Deg2Rad));
     }
 
@@ -107,7 +129,7 @@ public abstract class NPC : MonoBehaviour, IDamageable
             Die();
         }
     }
-    
+
     private void Die()
     {
         CurrentHealth = 0f;
