@@ -12,8 +12,6 @@ public class DestructableWall : MonoBehaviour
     private Material defaultMaterial;
     [SerializeField]
     private Material stencilMaterial;
-    [SerializeField]
-    private float wallThickness = 1f;
 
     private Renderer rend;
     private Collider col;
@@ -58,7 +56,7 @@ public class DestructableWall : MonoBehaviour
         var pos = new Vector3(hitPosition.x, hitPosition.y, transform.position.z);
         GameObject obj = Instantiate(hole, pos, rotation);
         var newHole = obj.GetComponent<Hole>();
-        newHole.Configure(radius, wallThickness);
+        newHole.Configure(radius, transform.localScale.z);
         holes.Add(newHole);
     }
 

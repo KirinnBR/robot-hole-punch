@@ -471,7 +471,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0031c0d5d03dc14aa7effcba7d909ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hook: {fileID: 2064868235859995158, guid: e805d5ab85090034a87b0d1215bfb1cb, type: 3}
+  hook: {fileID: 5220957683909362621, guid: a723514cf640ffd42a2985105374ef31, type: 3}
   hookSpawn: {fileID: 1980680217}
   hookStartSpeed: 10
   hookEndSpeed: 40

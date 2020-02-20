@@ -52,7 +52,8 @@ public class HookSystem : MonoBehaviour
                 audio.Play();
 
                 isHooking = true;
-                Hook grapplingHook = Instantiate(hook, hookSpawn.position, hookSpawn.rotation).GetComponent<Hook>();
+                Hook grapplingHook = Instantiate(hook, hookSpawn.position, Quaternion.LookRotation(-hookSpawn.forward, hookSpawn.up)).GetComponent<Hook>();
+                grapplingHook.hookCaller = transform;
                 grapplingHook.MaxDistance = hookDistance;
                 grapplingHook.onHookShotComplete.AddListener(CheckHook);
             }
@@ -91,6 +92,5 @@ public class HookSystem : MonoBehaviour
 
         isHooking = false;
     }
-
 
 }
