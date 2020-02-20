@@ -41,6 +41,20 @@ public class UIManager : Singleton<UIManager>
     [SerializeField]
     private Button backButton;
 
+    #endregion
+
+    #region In Game Canvas Settings
+
+    [Header("In Game Canvas")]
+
+    [SerializeField]
+    private GameObject inGame;
+    [SerializeField]
+    private Slider healthBar;
+    
+
+    public Slider PlayerHealthBar { get { return healthBar; } }
+
 	#endregion
 
 	protected override void Awake()
@@ -69,6 +83,7 @@ public class UIManager : Singleton<UIManager>
     {
         GameManager.Instance.LoadLevel("Level", UnityEngine.SceneManagement.LoadSceneMode.Single);
         GameManager.Instance.ChangeGameState(GameManager.GameState.InGame);
+        ActivateInGameEnvironment();
     }
 
     private void OptionsButtonPressed()
@@ -126,6 +141,7 @@ public class UIManager : Singleton<UIManager>
 
     private void ActivateInGameEnvironment()
     {
+        inGame.SetActive(true);
         mainMenu.SetActive(false);
         optionsMenu.SetActive(false);
         pauseMenu.SetActive(false);
@@ -143,6 +159,29 @@ public class UIManager : Singleton<UIManager>
         optionsMenu.SetActive(true);
         pauseMenu.SetActive(false);
         mainMenu.SetActive(false);
+    }
+
+    private Coroutine smoothHealthCoroutine = null;
+
+    public void ChangeHealth(float newHealth)
+    {
+        if (smoothHealthCoroutine != null)
+            StopCoroutine(smoothHealthCoroutine);
+        smoothHealthCoroutine = StartCoroutine(SmoothHealth(newHealth));
+    }
+
+    private IEnumerator SmoothHealth(float newHealth)
+    {
+        while (true)
+        {
+            healthBar.value = Mathf.Lerp(healthBar.value, newHealth, 4f * Time.deltaTime);
+            if (Mathf.Abs(healthBar.value - newHealth) < 0.1f)
+            {
+                healthBar.value = newHealth;
+                break;
+            }
+            yield return null;
+        }
     }
 
 

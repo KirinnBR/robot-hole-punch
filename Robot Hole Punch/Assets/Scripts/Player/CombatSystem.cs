@@ -67,6 +67,7 @@ public class CombatSystem : MonoBehaviour, IDamageable
     private LayerMask enemiesLayer { get { return LayerManager.Instance.enemyLayer; } }
     private LayerMask holesLayer { get { return LayerManager.Instance.holeLayer; } }
     private LayerMask environmentLayer { get { return LayerManager.Instance.environmentLayer; } }
+    private UnityEngine.UI.Slider healthBar { get { return UIManager.Instance.PlayerHealthBar; } }
     public float CurrentHealth { get; private set; }
 
     #endregion
@@ -76,6 +77,7 @@ public class CombatSystem : MonoBehaviour, IDamageable
     private void Start()
     {
         CurrentHealth = stats.health;
+        healthBar.maxValue = healthBar.value = CurrentHealth;
     }
 
     void Update()
@@ -189,6 +191,7 @@ public class CombatSystem : MonoBehaviour, IDamageable
 	public void TakeDamage(float amount)
     {
         CurrentHealth -= amount;
+        UIManager.Instance.ChangeHealth(CurrentHealth);
         if (CurrentHealth <= 0)
         {
             Die();
