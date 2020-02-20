@@ -52,6 +52,8 @@ public abstract class NPC : MonoBehaviour, IDamageable
     {
         CurrentHealth = stats.health;
         agent = GetComponent<NavMeshAgent>();
+        if (reference == null)
+            reference = transform;
     }
 
     protected virtual void FixedUpdate()

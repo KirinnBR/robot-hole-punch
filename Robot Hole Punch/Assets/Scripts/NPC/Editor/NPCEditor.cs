@@ -19,6 +19,11 @@ public class NPCEditor : Editor
 
 	private void DrawNPCGUI()
 	{
+		if(npc.reference == null)
+		{
+			return;
+		}
+
 		Vector3 dirAngleA = npc.DirFromAngle(-npc.normalVisionAngle / 2, false);
 		Vector3 dirAngleB = npc.DirFromAngle(npc.normalVisionAngle / 2, false);
 		Handles.color = Color.white;

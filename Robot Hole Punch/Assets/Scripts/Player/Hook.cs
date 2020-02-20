@@ -16,10 +16,12 @@ public class Hook : MonoBehaviour
 
     private new LineRenderer renderer;
 
+    public Transform hookCaller { get; set; }
+
     private void Start()
     {
         renderer = GetComponent<LineRenderer>();
-        renderer.SetPosition(0, transform.position);
+        renderer.SetPosition(0, hookCaller.position);
     }
 
     private void Update()
@@ -36,9 +38,10 @@ public class Hook : MonoBehaviour
             Destroy(gameObject);
         }
 
-        var fwd = Vector3.forward / 2;
+        var fwd = Vector3.back / 2;
 
         transform.Translate(fwd);
+        renderer.SetPosition(0, hookCaller.position);
         renderer.SetPosition(1, transform.position);
         distanceWent += fwd.magnitude;
     }

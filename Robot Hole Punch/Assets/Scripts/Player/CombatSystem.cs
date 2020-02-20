@@ -67,6 +67,7 @@ public class CombatSystem : MonoBehaviour, IDamageable
     private LayerMask enemiesLayer { get { return LayerManager.Instance.enemyLayer; } }
     private LayerMask holesLayer { get { return LayerManager.Instance.holeLayer; } }
     private LayerMask environmentLayer { get { return LayerManager.Instance.environmentLayer; } }
+    private UnityEngine.UI.Slider healthBar { get { return UIManager.Instance.PlayerHealthBar; } }
     public float CurrentHealth { get; private set; }
 
     #endregion
@@ -76,6 +77,8 @@ public class CombatSystem : MonoBehaviour, IDamageable
     private void Start()
     {
         CurrentHealth = stats.health;
+        UIManager.Instance.SetLaserChargeIntensity(0f);
+        healthBar.maxValue = healthBar.value = CurrentHealth;
     }
 
     void Update()
@@ -107,10 +110,12 @@ public class CombatSystem : MonoBehaviour, IDamageable
         {
             firstPersonController.CanRun = false;
             currentTime += Time.deltaTime;
-            if (currentTime >= 2f)
+            var intensity = currentTime / maxSecondsCharge;
+            UIManager.Instance.SetLaserChargeIntensity(intensity);
+            if (currentTime >= maxSecondsCharge)
                 Shoot(1f);
             else if (input.Shoot)
-                Shoot(currentTime / maxSecondsCharge);
+                Shoot(intensity);
         }
     }
 
@@ -118,6 +123,8 @@ public class CombatSystem : MonoBehaviour, IDamageable
     {
         isCharging = false;
         RaycastHit hit;
+
+        UIManager.Instance.SetLaserChargeIntensity(0f);
 
         audio.clip = laserShot;
         audio.PlayOneShot(laserShot);
@@ -189,6 +196,7 @@ public class CombatSystem : MonoBehaviour, IDamageable
 	public void TakeDamage(float amount)
     {
         CurrentHealth -= amount;
+        UIManager.Instance.ChangeHealth(CurrentHealth);
         if (CurrentHealth <= 0)
         {
             Die();
