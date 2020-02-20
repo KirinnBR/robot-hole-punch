@@ -2,13 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class UIManager : Singleton<UIManager>
 {
+    #region Other references
 
-	#region Main Menu Canvas Settings
+    public string SceneName;
 
-	[Header("Main Menu Canvas")]
+    #endregion
+
+    #region Main Menu Canvas Settings
+
+    [Header("Main Menu Canvas")]
 
     [SerializeField]
     private GameObject mainMenu;
@@ -83,7 +89,7 @@ public class UIManager : Singleton<UIManager>
 
     private void StartButtonPressed()
     {
-        GameManager.Instance.LoadLevel("Level", UnityEngine.SceneManagement.LoadSceneMode.Single);
+        GameManager.Instance.LoadLevel(SceneName, UnityEngine.SceneManagement.LoadSceneMode.Single);
         GameManager.Instance.ChangeGameState(GameManager.GameState.InGame);
         ActivateInGameEnvironment();
     }
