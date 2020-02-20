@@ -77,6 +77,7 @@ public class CombatSystem : MonoBehaviour, IDamageable
     private void Start()
     {
         CurrentHealth = stats.health;
+        UIManager.Instance.SetLaserChargeIntensity(0f);
         healthBar.maxValue = healthBar.value = CurrentHealth;
     }
 
@@ -109,10 +110,12 @@ public class CombatSystem : MonoBehaviour, IDamageable
         {
             firstPersonController.CanRun = false;
             currentTime += Time.deltaTime;
-            if (currentTime >= 2f)
+            var intensity = currentTime / maxSecondsCharge;
+            UIManager.Instance.SetLaserChargeIntensity(intensity);
+            if (currentTime >= maxSecondsCharge)
                 Shoot(1f);
             else if (input.Shoot)
-                Shoot(currentTime / maxSecondsCharge);
+                Shoot(intensity);
         }
     }
 
@@ -120,6 +123,8 @@ public class CombatSystem : MonoBehaviour, IDamageable
     {
         isCharging = false;
         RaycastHit hit;
+
+        UIManager.Instance.SetLaserChargeIntensity(0f);
 
         audio.clip = laserShot;
         audio.PlayOneShot(laserShot);

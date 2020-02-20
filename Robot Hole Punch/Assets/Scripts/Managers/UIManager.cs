@@ -51,8 +51,10 @@ public class UIManager : Singleton<UIManager>
     private GameObject inGame;
     [SerializeField]
     private Slider healthBar;
+    [SerializeField]
+    private Image laserChargeImage;
     
-
+    public Image LaserCharge { get { return laserChargeImage; } }
     public Slider PlayerHealthBar { get { return healthBar; } }
 
 	#endregion
@@ -168,6 +170,14 @@ public class UIManager : Singleton<UIManager>
         if (smoothHealthCoroutine != null)
             StopCoroutine(smoothHealthCoroutine);
         smoothHealthCoroutine = StartCoroutine(SmoothHealth(newHealth));
+    }
+
+
+    public void SetLaserChargeIntensity(float power)
+    {
+        power = Mathf.Clamp(power, 0f, 1f);
+        laserChargeImage.color = Color.Lerp(Color.green, Color.red, power);
+        Debug.Log(laserChargeImage.color);
     }
 
     private IEnumerator SmoothHealth(float newHealth)
