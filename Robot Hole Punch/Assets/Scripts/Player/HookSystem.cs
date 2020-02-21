@@ -64,6 +64,8 @@ public class HookSystem : MonoBehaviour
     {
         if (destination == Vector3.zero || Vector3.Distance(transform.position, destination) < 3f)
         {
+            firstPersonController.UseSound = true;
+            combat.CanCharge = true;
             isHooking = false;
             return;
         }

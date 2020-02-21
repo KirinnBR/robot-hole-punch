@@ -183,7 +183,6 @@ public class UIManager : Singleton<UIManager>
     {
         power = Mathf.Clamp(power, 0f, 1f);
         laserChargeImage.color = Color.Lerp(Color.green, Color.red, power);
-        Debug.Log(laserChargeImage.color);
     }
 
     private IEnumerator SmoothHealth(float newHealth)
