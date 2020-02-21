@@ -9,6 +9,8 @@ public class DestructableWall : MonoBehaviour
     [SerializeField]
     private float distanceFromPlayerLimit = 80f;
     [SerializeField]
+    private bool alwaysStencil = false;
+    [SerializeField]
     private Material defaultMaterial;
     [SerializeField]
     private Material stencilMaterial;
@@ -24,8 +26,12 @@ public class DestructableWall : MonoBehaviour
 
     private void Start()
     {
-        rend = GetComponent<MeshRenderer>();
+        rend = GetComponent<Renderer>();
         col = GetComponent<Collider>();
+        if (alwaysStencil)
+        {
+            rend.material = stencilMaterial;
+        }
     }
 
     // Update is called once per frame
@@ -43,6 +49,8 @@ public class DestructableWall : MonoBehaviour
             }
             col.enabled = true;
         }
+
+        if (alwaysStencil) return;
 
         if (Physics.Linecast(transform.position, reference.position, holesLayer | environmentLayer, QueryTriggerInteraction.Collide))
             rend.material = defaultMaterial;

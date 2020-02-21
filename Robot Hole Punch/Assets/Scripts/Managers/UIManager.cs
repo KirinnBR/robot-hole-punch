@@ -21,8 +21,6 @@ public class UIManager : Singleton<UIManager>
     [SerializeField]
     private Button startButton;
     [SerializeField]
-    private Button optionsButton;
-    [SerializeField]
     private Button quitGameButton;
 
     #endregion
@@ -35,17 +33,6 @@ public class UIManager : Singleton<UIManager>
     private GameObject pauseMenu;
     [SerializeField]
     private Button resumeButton;
-
-    #endregion
-
-    #region Options Menu Canvas Settings
-
-    [Header("Options Menu Canvas")]
-
-    [SerializeField]
-    private GameObject optionsMenu;
-    [SerializeField]
-    private Button backButton;
 
     #endregion
 
@@ -72,18 +59,13 @@ public class UIManager : Singleton<UIManager>
 
         //Main Menu buttons.
         startButton.onClick.AddListener(StartButtonPressed);
-        optionsButton.onClick.AddListener(OptionsButtonPressed);
         quitGameButton.onClick.AddListener(QuitGameButtonPressed);
 
         //Pause Menu buttons.
         resumeButton.onClick.AddListener(ResumeButtonPressed);
 
-        //Options Menu buttons.
-        backButton.onClick.AddListener(BackButtonPressed);
-
+        ActivateMainMenuEnvironment();
     }
-
-
 
     #region Main Menu Methods
 
@@ -92,11 +74,6 @@ public class UIManager : Singleton<UIManager>
         GameManager.Instance.LoadLevel(SceneName, UnityEngine.SceneManagement.LoadSceneMode.Single);
         GameManager.Instance.ChangeGameState(GameManager.GameState.InGame);
         ActivateInGameEnvironment();
-    }
-
-    private void OptionsButtonPressed()
-    {
-        ActivateOptionsEnvironment();
     }
 
     private void QuitGameButtonPressed()
@@ -111,15 +88,6 @@ public class UIManager : Singleton<UIManager>
     private void ResumeButtonPressed()
     {
         GameManager.Instance.ChangeGameState(GameManager.GameState.InGame);
-    }
-
-    #endregion
-
-    #region Options Menu Methods
-
-    private void BackButtonPressed()
-    {
-        ActivateMainMenuEnvironment();
     }
 
     #endregion
@@ -144,14 +112,13 @@ public class UIManager : Singleton<UIManager>
     {
         mainMenu.SetActive(true);
         pauseMenu.SetActive(false);
-        optionsMenu.SetActive(false);
+        inGame.SetActive(false);
     }
 
     private void ActivateInGameEnvironment()
     {
         inGame.SetActive(true);
         mainMenu.SetActive(false);
-        optionsMenu.SetActive(false);
         pauseMenu.SetActive(false);
     }
 
@@ -159,14 +126,7 @@ public class UIManager : Singleton<UIManager>
     {
         pauseMenu.SetActive(true);
         mainMenu.SetActive(false);
-        optionsMenu.SetActive(false);
-    }
-
-    private void ActivateOptionsEnvironment()
-    {
-        optionsMenu.SetActive(true);
-        pauseMenu.SetActive(false);
-        mainMenu.SetActive(false);
+        inGame.SetActive(false);
     }
 
     private Coroutine smoothHealthCoroutine = null;

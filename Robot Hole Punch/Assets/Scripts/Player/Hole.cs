@@ -34,7 +34,7 @@ public class Hole : MonoBehaviour
 
     public void Configure(float radius, float zScale)
     {
-        this.Radius = radius;
+        Radius = radius;
 
         transform.localScale = new Vector3(radius * 2, radius * 2, zScale);
 

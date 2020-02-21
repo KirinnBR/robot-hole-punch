@@ -99,7 +99,6 @@ public class GameManager : Singleton<GameManager>
 				PauseMenuState();
 				break;
 		}
-		onGameStateChanged.Invoke(CurrentGameState);
 	}
 
 	public void PauseMenuState()
