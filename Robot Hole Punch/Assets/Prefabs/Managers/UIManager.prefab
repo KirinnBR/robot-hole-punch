@@ -966,7 +966,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9243baf40f2348b42a334b7d3d348da4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SceneName: GamePlay
+  SceneName: Upper chest
   mainMenu: {fileID: 188786706}
   startButton: {fileID: 1634468785}
   quitGameButton: {fileID: 101046272798778506}
