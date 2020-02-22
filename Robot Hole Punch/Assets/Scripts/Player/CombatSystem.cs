@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -206,6 +207,7 @@ public class CombatSystem : MonoBehaviour, IDamageable
     private void Die()
     {
         CurrentHealth = 0;
+        Console.WriteLine("YOU DIED");
         //Call for endgame.
     }
 
