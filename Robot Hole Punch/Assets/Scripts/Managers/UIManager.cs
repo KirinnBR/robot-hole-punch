@@ -50,9 +50,14 @@ public class UIManager : Singleton<UIManager>
     public Image LaserCharge { get { return laserChargeImage; } }
     public Slider PlayerHealthBar { get { return healthBar; } }
 
-	#endregion
+    #endregion
 
-	protected override void Awake()
+    private void Start()
+    {
+        startButton.onClick.AddListener(StartButtonPressed);
+    }
+
+    protected override void Awake()
     {
         base.Awake();
         DontDestroyOnLoad(Instance);
@@ -74,6 +79,9 @@ public class UIManager : Singleton<UIManager>
         GameManager.Instance.LoadLevel(SceneName, UnityEngine.SceneManagement.LoadSceneMode.Single);
         GameManager.Instance.ChangeGameState(GameManager.GameState.InGame);
         ActivateInGameEnvironment();
+        pauseMenu.SetActive(false);
+        mainMenu.SetActive(false);
+        inGame.SetActive(true);
     }
 
     private void QuitGameButtonPressed()

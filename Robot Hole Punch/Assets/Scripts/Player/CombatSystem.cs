@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CombatSystem : MonoBehaviour, IDamageable
 {
@@ -207,7 +208,7 @@ public class CombatSystem : MonoBehaviour, IDamageable
     private void Die()
     {
         CurrentHealth = 0;
-        Console.WriteLine("YOU DIED");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         //Call for endgame.
     }
 
