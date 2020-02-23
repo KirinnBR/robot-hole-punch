@@ -1,19 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Sawblade : MonoBehaviour
 {
-
-    private CombatSystem CombatSystem;
-
-    private void OnTriggerEnter(Collider other)
+    void OnTriggerEnter(Collider other)
     {
-        if (tag == ("Player"))
+        if (other.gameObject.CompareTag("Player"))
         {
-
-
-            CombatSystem.TakeDamage(100);
+            SceneManager.LoadScene("Upper chest");
         }
     }
 }
+    
